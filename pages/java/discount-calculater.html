@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Java: Discount Calculator (CLI) | Dillan Lofton</title>
-<meta name="description" content="Interactive demo that mirrors the Java Discount Calculator + project overview.">
+<meta name="description" content="Interactive demo + Java source for the Discount Calculator project.">
 <style>
   :root{--bg:#0f1720;--text:#e5e7eb;--muted:#9ca3af;--card:#0b1220;--border:#1f2937;--brand:#ff9900}
   *{box-sizing:border-box}
@@ -33,6 +33,9 @@
   .warn{border-color:#b45309;background:#1f150a}
   .tiers{border-collapse:collapse;width:100%}
   .tiers th,.tiers td{border-bottom:1px solid var(--border);padding:.45rem .4rem;text-align:left}
+  pre{white-space:pre-wrap;word-wrap:break-word;background:#0a1120;border:1px solid var(--border);border-radius:12px;padding:1rem;overflow:auto}
+  .codebar{display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem}
+  .stack{display:grid;gap:1rem}
   footer{color:var(--muted);text-align:center;margin:1.2rem 0 .4rem}
 </style>
 </head>
@@ -106,7 +109,25 @@ Discounts are given based on quantity:
     </section>
   </div>
 
-  <!-- (Optional) If you want to show your source here later, we can add a code block. -->
+  <!-- NEW: Source code viewer + compile/run box -->
+  <section class="stack" style="margin-top:1rem">
+    <section class="card">
+      <div class="codebar">
+        <h2 style="margin:0">Java Source (loaded from <code>assets/java/Discount_Calculator.java</code>)</h2>
+        <button class="btn secondary" id="copyBtn" type="button">Copy code</button>
+      </div>
+      <pre id="javaCode">Loading source…</pre>
+      <p class="note" id="codeNote" style="margin-top:.4rem">If this doesn’t load, make sure the file exists at <code>/assets/java/Discount_Calculator.java</code> (case-sensitive).</p>
+    </section>
+
+    <section class="card">
+      <h2>How to Compile & Run</h2>
+      <pre>javac Discount_Calculator.java
+java Discount_Calculator</pre>
+      <p class="note">Requires Java (JDK). Run these commands in the same folder where the <code>.java</code> file is saved.</p>
+    </section>
+  </section>
+
   <footer>© <span id="yr"></span> Dillan Lofton • Java Discount Calculator</footer>
 </main>
 
@@ -124,7 +145,6 @@ function discountRate(qty){
   if (qty >= 10)  return 0.20;
   return 0.00;
 }
-
 function fmt(n){ return n.toLocaleString(undefined,{style:'currency',currency:'USD'}); }
 
 const qty = document.getElementById('qty');
@@ -142,7 +162,6 @@ function showMsg(text, klass){
 calcBtn.addEventListener('click', e=>{
   e.preventDefault();
   const raw = qty.value.trim();
-  // Must be a whole number > 0 (like your CLI)
   const q = Number(raw);
   if (!raw || !Number.isInteger(q)) {
     showMsg('Invalid input. Please enter a whole number only.', 'warn');
@@ -160,7 +179,6 @@ calcBtn.addEventListener('click', e=>{
   const discAmt = subtotal * rate;
   const total = subtotal - discAmt;
 
-  // KPIs
   document.getElementById('kRate').textContent = `${Math.round(rate*100)}%`;
   document.getElementById('kUnit').textContent = fmt(UNIT_PRICE);
   document.getElementById('kSubtotal').textContent = fmt(subtotal);
@@ -168,7 +186,6 @@ calcBtn.addEventListener('click', e=>{
   document.getElementById('kTotal').textContent = rate>0 ? fmt(total) : fmt(subtotal);
   res.style.display = '';
 
-  // Status message that feels like your CLI wording
   if (rate > 0){
     showMsg(`You purchased ${q} packages.
 Original price: ${fmt(subtotal)}
@@ -185,6 +202,19 @@ resetBtn.addEventListener('click', ()=>{
   qty.value = '';
   res.style.display = 'none';
   cliMsg.style.display = 'none';
+});
+
+// CODE VIEWER: fetch your source from assets/java/Discount_Calculator.java
+const codeEl = document.getElementById('javaCode');
+fetch('../../assets/java/Discount_Calculator.java', {cache:'no-store'})
+  .then(r => { if(!r.ok) throw new Error(r.status); return r.text(); })
+  .then(txt => { codeEl.textContent = txt; })
+  .catch(err => { codeEl.textContent = 'Source not found. Upload Discount_Calculator.java to /assets/java/'; });
+
+// Copy button
+document.getElementById('copyBtn').addEventListener('click', ()=>{
+  const txt = codeEl.innerText;
+  navigator.clipboard.writeText(txt).then(()=> alert('Java code copied!'));
 });
 </script>
 </body>
