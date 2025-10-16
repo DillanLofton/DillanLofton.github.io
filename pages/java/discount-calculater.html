@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Java: Discount Calculator (CLI) | Dillan Lofton</title>
+<meta name="description" content="Interactive demo that mirrors the Java Discount Calculator + project overview.">
+<style>
+  :root{--bg:#0f1720;--text:#e5e7eb;--muted:#9ca3af;--card:#0b1220;--border:#1f2937;--brand:#ff9900}
+  *{box-sizing:border-box}
+  body{margin:0;background:#0f1720;color:var(--text);font-family:ui-sans-serif,system-ui,Segoe UI,Roboto}
+  a{color:#ffb84d;text-decoration:none}
+  header{position:sticky;top:0;background:#0f1720cc;backdrop-filter:blur(8px);padding:.8rem;border-bottom:1px solid var(--border)}
+  .wrap{max-width:980px;margin:auto;padding:1.2rem}
+  h1{margin:.4rem 0 0}
+  h2{margin:1rem 0 .6rem;color:#ffcc80}
+  .row{display:grid;gap:1rem}
+  @media(min-width:900px){.row{grid-template-columns:1fr 1fr}}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1rem}
+  .pill{display:inline-block;border:1px solid var(--border);border-radius:999px;padding:.2rem .55rem;margin-right:.4rem;color:#cbd5e1;font-size:.8rem}
+  .form-grid{display:grid;gap:.7rem}
+  label{color:#d1d5db;font-size:.95rem}
+  input[type="number"]{width:100%;padding:.6rem .7rem;border-radius:10px;border:1px solid var(--border);background:#0a1120;color:var(--text)}
+  .btn{display:inline-flex;align-items:center;gap:.4rem;background:linear-gradient(180deg,var(--brand),#f59e0b);color:#111;
+       font-weight:700;padding:.55rem .85rem;border-radius:.6rem;box-shadow:0 8px 22px rgba(255,153,0,.25);border:none;cursor:pointer}
+  .btn.secondary{background:transparent;color:#f3f4f6;border:1px solid var(--border);box-shadow:none}
+  .note{color:var(--muted);font-size:.9rem}
+  .result{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.6rem;margin-top:.8rem}
+  .kpi{background:#0a1120;border:1px solid var(--border);border-radius:12px;padding:.7rem}
+  .kpi h3{margin:0 0 .15rem;font-size:.95rem;color:#cbd5e1;font-weight:600}
+  .kpi p{margin:0;font-size:1.05rem}
+  .msg{margin-top:.6rem;padding:.6rem .7rem;border-radius:10px;border:1px solid var(--border);background:#0a1120}
+  .ok{border-color:#2f855a;background:#0a1f17}
+  .warn{border-color:#b45309;background:#1f150a}
+  .tiers{border-collapse:collapse;width:100%}
+  .tiers th,.tiers td{border-bottom:1px solid var(--border);padding:.45rem .4rem;text-align:left}
+  footer{color:var(--muted);text-align:center;margin:1.2rem 0 .4rem}
+</style>
+</head>
+<body>
+<header class="wrap"><a href="../index.html">← Back to Java</a></header>
+<main class="wrap">
+  <h1>Java: Discount Calculator (CLI)</h1>
+  <div class="pill">Java</div> <div class="pill">Console App</div>
+
+  <div class="row" style="margin-top:.6rem">
+    <!-- Interactive Demo -->
+    <section class="card">
+      <h2>Interactive Demo (mirrors your program)</h2>
+      <p class="note">Unit price: <strong>$75.00</strong>. Enter a whole number (> 0) to see the discount tier and totals.</p>
+
+      <div class="form-grid">
+        <label for="qty">Quantity</label>
+        <input id="qty" type="number" min="1" step="1" placeholder="e.g., 12">
+        <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+          <button class="btn" id="calcBtn">Calculate</button>
+          <button class="btn secondary" id="resetBtn" type="button">Reset</button>
+          <a class="btn secondary" id="downloadBtn" href="../../assets/java/Discount_Calculator.java" download>Download .java</a>
+        </div>
+      </div>
+
+      <div id="cliMsg" class="msg" style="display:none"></div>
+
+      <div class="result" id="result" style="display:none">
+        <div class="kpi"><h3>Discount Rate</h3><p id="kRate">—</p></div>
+        <div class="kpi"><h3>Price (each)</h3><p id="kUnit">$75.00</p></div>
+        <div class="kpi"><h3>Subtotal</h3><p id="kSubtotal">—</p></div>
+        <div class="kpi"><h3>Discount Amount</h3><p id="kDiscAmt">—</p></div>
+        <div class="kpi"><h3>Grand Total</h3><p id="kTotal">—</p></div>
+      </div>
+
+      <details style="margin-top:.8rem">
+        <summary><strong>Discount tiers</strong></summary>
+        <table class="tiers">
+          <thead><tr><th>Quantity</th><th>Discount</th></tr></thead>
+          <tbody>
+            <tr><td>1–9</td><td>0%</td></tr>
+            <tr><td>10–19</td><td>20%</td></tr>
+            <tr><td>20–49</td><td>30%</td></tr>
+            <tr><td>50–99</td><td>40%</td></tr>
+            <tr><td>100+</td><td>50%</td></tr>
+          </tbody>
+        </table>
+      </details>
+    </section>
+
+    <!-- Project Overview -->
+    <section class="card">
+      <h2>Overview</h2>
+      <ul>
+        <li>Prompts user for quantity (whole number > 0)</li>
+        <li>Applies tiered discount (20/30/40/50%)</li>
+        <li>Prints unit price, discount %, and totals</li>
+        <li>Input validation + repeat flow (Y/N)</li>
+      </ul>
+
+      <h2 style="margin-top:.8rem">Sample Output</h2>
+<pre>Demon Software and Computers is offering discounts on the Vic Package.
+This package includes a computer and software for basic daily functions.
+The Vic Package sells for $75.00
+
+Discounts are given based on quantity:
+- 10 - 19: 20% Off
+- 20 - 49: 30% Off
+- 50 - 99: 40% Off
+- 100 or more: 50% Off</pre>
+    </section>
+  </div>
+
+  <!-- (Optional) If you want to show your source here later, we can add a code block. -->
+  <footer>© <span id="yr"></span> Dillan Lofton • Java Discount Calculator</footer>
+</main>
+
+<script>
+// year
+document.getElementById('yr').textContent = new Date().getFullYear();
+
+// interactive demo (mirrors your Java tiers exactly)
+const UNIT_PRICE = 75.00;
+
+function discountRate(qty){
+  if (qty >= 100) return 0.50;
+  if (qty >= 50)  return 0.40;
+  if (qty >= 20)  return 0.30;
+  if (qty >= 10)  return 0.20;
+  return 0.00;
+}
+
+function fmt(n){ return n.toLocaleString(undefined,{style:'currency',currency:'USD'}); }
+
+const qty = document.getElementById('qty');
+const calcBtn = document.getElementById('calcBtn');
+const resetBtn = document.getElementById('resetBtn');
+const res = document.getElementById('result');
+const cliMsg = document.getElementById('cliMsg');
+
+function showMsg(text, klass){
+  cliMsg.textContent = text;
+  cliMsg.className = 'msg ' + (klass || '');
+  cliMsg.style.display = '';
+}
+
+calcBtn.addEventListener('click', e=>{
+  e.preventDefault();
+  const raw = qty.value.trim();
+  // Must be a whole number > 0 (like your CLI)
+  const q = Number(raw);
+  if (!raw || !Number.isInteger(q)) {
+    showMsg('Invalid input. Please enter a whole number only.', 'warn');
+    res.style.display = 'none';
+    return;
+  }
+  if (q <= 0) {
+    showMsg('Invalid input. Please enter a positive number.', 'warn');
+    res.style.display = 'none';
+    return;
+  }
+
+  const rate = discountRate(q);
+  const subtotal = q * UNIT_PRICE;
+  const discAmt = subtotal * rate;
+  const total = subtotal - discAmt;
+
+  // KPIs
+  document.getElementById('kRate').textContent = `${Math.round(rate*100)}%`;
+  document.getElementById('kUnit').textContent = fmt(UNIT_PRICE);
+  document.getElementById('kSubtotal').textContent = fmt(subtotal);
+  document.getElementById('kDiscAmt').textContent = rate>0 ? `-${fmt(discAmt)}` : fmt(0);
+  document.getElementById('kTotal').textContent = rate>0 ? fmt(total) : fmt(subtotal);
+  res.style.display = '';
+
+  // Status message that feels like your CLI wording
+  if (rate > 0){
+    showMsg(`You purchased ${q} packages.
+Original price: ${fmt(subtotal)}
+Discount applied: ${Math.round(rate*100)}%
+Total cost after discount: ${fmt(total)}`, 'ok');
+  } else {
+    showMsg(`You purchased ${q} packages.
+No discount applied
+Total cost: ${fmt(subtotal)}`, 'ok');
+  }
+});
+
+resetBtn.addEventListener('click', ()=>{
+  qty.value = '';
+  res.style.display = 'none';
+  cliMsg.style.display = 'none';
+});
+</script>
+</body>
+</html>
