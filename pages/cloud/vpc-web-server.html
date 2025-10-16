@@ -69,18 +69,18 @@ pre,code{
   <div class="card">
     <h2>Architecture (Result)</h2>
     <ul>
-      <li><strong>VPC:</strong> <code>lab-vpc</code> (10.0.0.0/16)</li>
-      <li><strong>Subnets (AZ a):</strong> Public <code>10.0.0.0/24</code>, Private <code>10.0.1.0/24</code></li>
-      <li><strong>Subnets (AZ b):</strong> Public <code>10.0.2.0/24</code>, Private <code>10.0.3.0/24</code></li>
-      <li><strong>Route Tables:</strong> <code>lab-rtb-public</code> (→ IGW), <code>lab-rtb-private1-us-east-1a</code> (→ NAT), associated to both private subnets</li>
-      <li><strong>Gateways:</strong> Internet Gateway <code>lab-igw</code>; NAT Gateway <code>lab-nat-public1-us-east-1a</code></li>
+      <li><strong>VPC:</strong> lab-vpc (10.0.0.0/16)</li>
+      <li><strong>Subnets (AZ a):</strong> Public 10.0.0.0/24, Private 10.0.1.0/24</li>
+      <li><strong>Subnets (AZ b):</strong> Public 10.0.2.0/24, Private 10.0.3.0/24</li>
+      <li><strong>Route Tables:</strong> lab-rtb-public (→ IGW), lab-rtb-private1-us-east-1a (→ NAT), associated to both private subnets</li>
+      <li><strong>Gateways:</strong> Internet Gateway lab-igw; NAT Gateway lab-nat-public1-us-east-1a</li>
       <li><strong>Security Group:</strong> “Web Security Group” (allow HTTP from Anywhere-IPv4)</li>
-      <li><strong>EC2:</strong> t2.micro Amazon Linux 2023 in <code>lab-subnet-public2</code> with public IP</li>
+      <li><strong>EC2:</strong> t2.micro Amazon Linux 2023 in lab-subnet-public2 with public IP</li>
     </ul>
     <div class="grid">
       <figure>
         <img src="../../assets/img/lab2-architecture.png" alt="VPC architecture diagram">
-        <figcaption class="note">Upload to <code>/assets/img/lab2-architecture.png</code></figcaption>
+        <figcaption class="note">Upload to /assets/img/lab2-architecture.png </figcaption>
       </figure>
     </div>
   </div>
@@ -98,30 +98,30 @@ pre,code{
       <ol>
         <li>Open <em>VPC</em> (region: <strong>us-east-1</strong>), choose <em>Create VPC</em> → <strong>VPC and more</strong>.</li>
         <li>Name tag auto-generation: keep <em>Auto-generate</em>, change value from <em>project</em> to <strong>lab</strong>.</li>
-        <li>IPv4 CIDR: <code>10.0.0.0/16</code>; AZs: <strong>1</strong>; public subnets: <strong>1</strong>; private subnets: <strong>1</strong>.</li>
+        <li>IPv4 CIDR: 10.0.0.0/16; AZs: <strong>1</strong>; public subnets: <strong>1</strong>; private subnets: <strong>1</strong>.</li>
         <li>Customize subnet CIDRs:
           <ul>
-            <li>Public (us-east-1a): <code>10.0.0.0/24</code></li>
-            <li>Private (us-east-1a): <code>10.0.1.0/24</code></li>
+            <li>Public (us-east-1a): 10.0.0.0/24</li>
+            <li>Private (us-east-1a): 10.0.1.0/24</li>
           </ul>
         </li>
         <li>NAT Gateways: <strong>In 1 AZ</strong>; VPC endpoints: <strong>None</strong>; DNS hostnames + resolution: <strong>enabled</strong>.</li>
         <li>Preview confirms resources (IGW, NAT, subnets, route tables) → <strong>Create VPC</strong> → wait until complete → <strong>View VPC</strong>.</li>
       </ol>
-      <p class="note">Public subnet is “public” because its route table sends <code>0.0.0.0/0</code> to the Internet Gateway. Private subnets route internet-bound traffic to the NAT Gateway.</p>
+      <p class="note">Public subnet is “public” because its route table sends 0.0.0.0/0 to the Internet Gateway. Private subnets route internet-bound traffic to the NAT Gateway.</p>
     </details>
 
     <details>
       <summary><strong>Task 2 — Create additional subnets (second AZ) & update associations</strong></summary>
       <ol>
-        <li><em>Subnets</em> → <strong>Create subnet</strong> (VPC: <code>lab-vpc</code>): 
+        <li><em>Subnets</em> → <strong>Create subnet</strong> (VPC: lab-vpc): 
           <ul>
-            <li><strong>lab-subnet-public2</strong> (AZ: us-east-1b, CIDR: <code>10.0.2.0/24</code>)</li>
+            <li><strong>lab-subnet-public2</strong> (AZ: us-east-1b, CIDR: 10.0.2.0/24)</li>
             <li><strong>lab-subnet-private2</strong> (AZ: us-east-1b, CIDR: <code>10.0.3.0/24</code>)</li>
           </ul>
         </li>
-        <li><em>Route tables</em> → select <code>lab-rtb-private1-us-east-1a</code> → <em>Subnet associations</em> → <strong>Edit</strong> → keep private1 + add <strong>lab-subnet-private2</strong> → Save.</li>
-        <li>Select <code>lab-rtb-public</code> → <em>Subnet associations</em> → <strong>Edit</strong> → keep public1 + add <strong>lab-subnet-public2</strong> → Save.</li>
+        <li><em>Route tables</em> → select lab-rtb-private1-us-east-1a → <em>Subnet associations</em> → <strong>Edit</strong> → keep private1 + add <strong>lab-subnet-private2</strong> → Save.</li>
+        <li>Select lab-rtb-public → <em>Subnet associations</em> → <strong>Edit</strong> → keep public1 + add <strong>lab-subnet-public2</strong> → Save.</li>
       </ol>
     </details>
 
@@ -176,7 +176,7 @@ runcmd:
   <div class="row">
     <div class="card">
       <h2>Screenshots</h2>
-      <p class="note">Upload images to <code>/assets/img/</code> using these names (or update the paths below):</p>
+      <p class="note">Upload images to /assets/img/ using these names (or update the paths below):</p>
       <div class="grid">
         <figure><img src="../../assets/img/lab2-vpc-created.png" alt="VPC created"><figcaption class="note">VPC created</figcaption></figure>
         <figure><img src="../../assets/img/lab2-subnets.png" alt="Subnets list"><figcaption class="note">Subnets: public/private in two AZs</figcaption></figure>
