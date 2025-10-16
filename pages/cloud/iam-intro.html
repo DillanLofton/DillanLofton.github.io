@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>IAM: Users, Groups & Policies | Dillan Lofton</title>
+<style>
+  body{margin:0;background:#0f1720;color:#e5e7eb;font-family:ui-sans-serif,system-ui,Segoe UI,Roboto}
+  a{color:#ffb84d}
+  header{position:sticky;top:0;background:#0f1720cc;backdrop-filter:blur(8px);padding:.8rem;border-bottom:1px solid #1f2937}
+  .wrap{max-width:900px;margin:auto;padding:1.2rem}
+  h1{margin:.4rem 0 0}
+  h2{margin:1rem 0 .5rem;color:#ffcc80}
+  .card{background:#0b1220;border:1px solid #1f2937;border-radius:14px;padding:1rem;margin-top:1rem}
+  .pill{display:inline-block;border:1px solid #1f2937;border-radius:999px;padding:.2rem .5rem;margin-right:.4rem;color:#cbd5e1;font-size:.8rem}
+  .row{display:grid;gap:1rem}
+  @media(min-width:820px){.row{grid-template-columns:1fr 1fr}}
+  .btn{display:inline-block;background:linear-gradient(180deg,#ff9900,#f59e0b);color:#111;font-weight:700;padding:.45rem .7rem;border-radius:.55rem;margin-top:.6rem;text-decoration:none}
+</style>
+</head>
+<body>
+<header class="wrap"><a href="../index.html">← Back to Cloud Labs</a></header>
+<main class="wrap">
+  <h1>IAM: Users, Groups & Policies</h1>
+  <div class="pill">AWS • IAM</div> <div class="pill">Security</div>
+
+  <!-- NEW: Lab Overview -->
+  <div class="card">
+    <h2>Lab Overview</h2>
+    <p>This lab demonstrates: exploring pre-created IAM Users & Groups; inspecting managed vs. inline policies; assigning users to groups based on a real business scenario; locating and using the IAM sign-in URL; and testing how policies allow or deny access to S3 and EC2.</p>
+  </div>
+
+  <!-- NEW: AWS Service Restrictions -->
+  <div class="card">
+    <h2>Lab Environment Note</h2>
+    <p>The sandbox account limits services to just what’s needed. “Not authorized” errors that appear outside the lab scope are expected and do not block completion.</p>
+  </div>
+
+  <div class="row">
+    <div class="card">
+      <h2>Objective</h2>
+      <p>Manage access using IAM users, groups, and policies; test least-privilege across S3 and EC2.</p>
+    </div>
+
+    <div class="card">
+      <h2>Services Used</h2>
+      <ul>
+        <li>IAM (managed vs inline policies)</li>
+        <li>Amazon S3 (read-only support)</li>
+        <li>Amazon EC2 (view / start / stop by role)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Key Concepts</h2>
+    <ul>
+      <li><strong>Users</strong> represent people/apps</li>
+      <li><strong>Groups</strong> share permissions</li>
+      <li><strong>Policies</strong> (JSON) allow/deny actions on resources (Effect, Action, Resource)</li>
+      <li><strong>Least Privilege</strong> — only what’s needed</li>
+      <li><strong>Managed vs Inline</strong> — reusable vs one-off</li>
+    </ul>
+  </div>
+
+  <!-- NEW: Business Scenario table -->
+  <div class="card">
+    <h2>Business Scenario</h2>
+    <table style="width:100%;border-collapse:collapse">
+      <thead>
+        <tr>
+          <th style="text-align:left;border-bottom:1px solid #1f2937;padding:.4rem">User</th>
+          <th style="text-align:left;border-bottom:1px solid #1f2937;padding:.4rem">Group</th>
+          <th style="text-align:left;border-bottom:1px solid #1f2937;padding:.4rem">Permissions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td style="padding:.4rem">user-1</td><td style="padding:.4rem">S3-Support</td><td style="padding:.4rem">Read-only S3</td></tr>
+        <tr><td style="padding:.4rem">user-2</td><td style="padding:.4rem">EC2-Support</td><td style="padding:.4rem">Read-only EC2</td></tr>
+        <tr><td style="padding:.4rem">user-3</td><td style="padding:.4rem">EC2-Admin</td><td style="padding:.4rem">EC2 view + Start/Stop</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- UPDATED: Steps Summary stays (short) -->
+  <div class="card">
+    <h2>Summary of Steps</h2>
+    <ol>
+      <li>Reviewed pre-created users (user-1..3) and groups (EC2-Admin, EC2-Support, S3-Support).</li>
+      <li>Verified policies:
+        <ul>
+          <li>EC2-Support → <em>AmazonEC2ReadOnlyAccess</em></li>
+          <li>S3-Support → <em>AmazonS3ReadOnlyAccess</em></li>
+          <li>EC2-Admin → Inline (Describe + Start/Stop EC2)</li>
+        </ul>
+      </li>
+      <li>Assigned users to groups per business scenario.</li>
+      <li>Signed in via the IAM sign-in URL and tested S3/EC2 access for each user.</li>
+      <li>Submitted the lab for grading and verified results.</li>
+    </ol>
+  </div>
+
+  <!-- NEW: Full Step-by-Step (collapsible accordions) -->
+  <div class="card">
+    <h2>Detailed Steps</h2>
+
+    <details open>
+      <summary><strong>Access the Console & Start the Lab (timer, pop-ups)</strong></summary>
+      <ol>
+        <li>Start Lab → wait for green status → open AWS Console (allow pop-ups if blocked).</li>
+        <li>Arrange instructions and console side-by-side.</li>
+      </ol>
+    </details>
+
+    <details>
+      <summary><strong>Task 1: Explore Users & Groups</strong></summary>
+      <ol>
+        <li>Open <em>IAM</em> → <em>Users</em> → confirm <code>user-1</code>, <code>user-2</code>, <code>user-3</code>.</li>
+        <li>Open <code>user-1</code> → Permissions (none), Groups (none), Security credentials (console password).</li>
+        <li><em>User groups</em> → view <code>EC2-Admin</code>, <code>EC2-Support</code>, <code>S3-Support</code>.</li>
+        <li><code>EC2-Support</code> → Permissions → <em>AmazonEC2ReadOnlyAccess</em> (List/Describe EC2, ELB, CloudWatch, Auto Scaling).</li>
+        <li><code>S3-Support</code> → Permissions → <em>AmazonS3ReadOnlyAccess</em> (Get/List S3).</li>
+        <li><code>EC2-Admin</code> → Inline policy → EC2 Describe + Start/Stop.</li>
+      </ol>
+    </details>
+
+    <details>
+      <summary><strong>Task 2: Add Users to Groups</strong></summary>
+      <ol>
+        <li>Add <code>user-1</code> → <code>S3-Support</code>.</li>
+        <li>Add <code>user-2</code> → <code>EC2-Support</code>.</li>
+        <li>Add <code>user-3</code> → <code>EC2-Admin</code>.</li>
+        <li>Verify each group shows 1 member.</li>
+      </ol>
+      <p style="color:#9ca3af">Note: Ignore “not authorized” errors caused by sandbox limits.</p>
+    </details>
+
+    <details>
+      <summary><strong>Task 3: Sign-In & Test Permissions</strong></summary>
+      <ol>
+        <li>From IAM Dashboard copy the account <strong>sign-in URL</strong> (e.g., <code>https://&lt;acct-id&gt;.signin.aws.amazon.com/console</code>).</li>
+        <li>Open a private/incognito window and sign in as each user:</li>
+      </ol>
+      <ul>
+        <li><strong>user-1</strong> (S3 Support): can list S3 buckets; EC2 denied.</li>
+        <li><strong>user-2</strong> (EC2 Support): can view instance <em>LabHost</em>; stop action denied.</li>
+        <li><strong>user-3</strong> (EC2 Admin): can stop <em>LabHost</em>; instance enters <em>stopping</em>.</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary><strong>Submit for Credit</strong></summary>
+      <ol>
+        <li>Choose <em>Submit</em> (wait ≥5 minutes after actions if needed) → review <em>Grades</em> and <em>Submission Report</em>.</li>
+        <li>End Lab → confirm.</li>
+      </ol>
+    </details>
+  </div>
+
+  <div class="row">
+    <div class="card">
+      <h2>Results</h2>
+      <ul>
+        <li><strong>user-1</strong>: S3 read-only, EC2 denied</li>
+        <li><strong>user-2</strong>: EC2 read-only, S3 denied</li>
+        <li><strong>user-3</strong>: EC2 view + Start/Stop</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>Reflection</h2>
+      <p>Grouping users by function and attaching managed policies keeps access simple and secure. Inline policies are useful for one-off admin capabilities. This lab reinforced IAM policy structure (Effect, Action, Resource) and least privilege.</p>
+      <a class="btn" href="../../assets/labs/IAM_Lab.pdf" target="_blank">View Lab PDF</a>
+    </div>
+  </div>
+
+  <!-- NEW: Screenshots -->
+  <div class="card">
+    <h2>Screenshots</h2>
+    <p style="color:#9ca3af">Place images in <code>/assets/img/</code> and use the names below (PNG or JPG). Replace the <code>src</code> paths if you choose different names.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.6rem">
+      <figure><img src="../../assets/img/iam-users.png" alt="IAM Users list" style="width:100%;border-radius:10px;border:1px solid #1f2937"><figcaption>IAM → Users</figcaption></figure>
+      <figure><img src="../../assets/img/iam-ec2-support-policy.png" alt="EC2 Support policy details" style="width:100%;border-radius:10px;border:1px solid #1f2937"><figcaption>EC2-Support → AmazonEC2ReadOnlyAccess</figcaption></figure>
+      <figure><img src="../../assets/img/iam-s3-support-policy.png" alt="S3 Support policy details" style="width:100%;border-radius:10px;border:1px solid #1f2937"><figcaption>S3-Support → AmazonS3ReadOnlyAccess</figcaption></figure>
+      <figure><img src="../../assets/img/iam-ec2-admin-inline.png" alt="EC2 Admin inline policy" style="width:100%;border-radius:10px;border:1px solid #1f2937"><figcaption>EC2-Admin → Inline policy</figcaption></figure>
+      <figure><img src="../../assets/img/iam-signin-url.png" alt="IAM account sign-in URL" style="width:100%;border-radius:10px;border:1px solid #1f2937"><figcaption>Account Sign-in URL</figcaption></figure>
+      <figure><img src="../../assets/img/s3-list-buckets.png" alt="S3 List Buckets as user-1" style="width:100%;border-radius:10px;border:1px solid #1f2937"><figcaption>user-1 S3 list (allowed)</figcaption></figure>
+      <figure><img src="../../assets/img/ec2-denied-user1.png" alt="EC2 denied for user-1" style="width:100%;border-radius:10px;border:1px solid #1f2937"><figcaption>user-1 EC2 (denied)</figcaption></figure>
+      <figure><img src="../../assets/img/ec2-view-user2.png" alt="EC2 view as user-2" style="width:100%;border-radius:10px;border:1px solid #1f2937"><figcaption>user-2 EC2 view (read-only)</figcaption></figure>
+      <figure><img src="../../assets/img/ec2-stop-denied-user2.png" alt="Stop denied for user-2" style="width:100%;border-radius:10px;border:1px solid #1f2937"><figcaption>user-2 Stop (denied)</figcaption></figure>
+      <figure><img src="../../assets/img/ec2-stop-user3.png" alt="Stop instance as user-3" style="width:100%;border-radius:10px;border:1px solid #1f2937"><figcaption>user-3 Stop instance (allowed)</figcaption></figure>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Duration</h2>
+    <p>~40 minutes</p>
+  </div>
+</main>
+</body>
+</html>
