@@ -36,12 +36,12 @@
   pre{white-space:pre-wrap;word-wrap:break-word;background:#0a1120;border:1px solid var(--border);border-radius:12px;padding:1rem;overflow:auto}
   .codebar{display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem}
   .stack{display:grid;gap:1rem}
-  footer{color:var(--muted);text-align:center;margin:1.2rem 0 .4rem}
+  footer{color:#9ca3af;text-align:center;margin:1.2rem 0 .4rem}
 </style>
 </head>
 <body>
 <header class="wrap"><a href="../index.html">← Back to Java</a></header>
-<main class="wrap">
+<main class="wrap" id="pageRoot" data-java="">
   <h1>Java: Discount Calculator (CLI)</h1>
   <div class="pill">Java</div> <div class="pill">Console App</div>
 
@@ -57,7 +57,7 @@
         <div style="display:flex;gap:.6rem;flex-wrap:wrap">
           <button class="btn" id="calcBtn">Calculate</button>
           <button class="btn secondary" id="resetBtn" type="button">Reset</button>
-          <a class="btn secondary" id="downloadBtn" href="../../assets/java/Discount_Calculator.java" download>Download .java</a>
+          <a class="btn secondary" id="downloadBtn" href="#" download>Download .java</a>
         </div>
       </div>
 
@@ -109,22 +109,22 @@ Discounts are given based on quantity:
     </section>
   </div>
 
-  <!-- NEW: Source code viewer + compile/run box -->
+  <!-- Source code viewer + compile/run box -->
   <section class="stack" style="margin-top:1rem">
     <section class="card">
       <div class="codebar">
-        <h2 style="margin:0">Java Source (loaded from <code>assets/java/Discount_Calculator.java</code>)</h2>
+        <h2 style="margin:0">Java Source</h2>
         <button class="btn secondary" id="copyBtn" type="button">Copy code</button>
       </div>
       <pre id="javaCode">Loading source…</pre>
-      <p class="note" id="codeNote" style="margin-top:.4rem">If this doesn’t load, make sure the file exists at <code>/assets/java/Discount_Calculator.java</code> (case-sensitive).</p>
+      <p class="note" id="codeNote" style="margin-top:.4rem">If this doesn’t load, make sure the file exists in <code>/assets/java/</code>. This page auto-maps the name from the URL.</p>
     </section>
 
     <section class="card">
       <h2>How to Compile & Run</h2>
-      <pre>javac Discount_Calculator.java
+      <pre id="cmds">javac Discount_Calculator.java
 java Discount_Calculator</pre>
-      <p class="note">Requires Java (JDK). Run these commands in the same folder where the <code>.java</code> file is saved.</p>
+      <p class="note">Requires Java (JDK). Run these commands in the same folder as the <code>.java</code> file.</p>
     </section>
   </section>
 
@@ -132,12 +132,55 @@ java Discount_Calculator</pre>
 </main>
 
 <script>
-// year
+// Year
 document.getElementById('yr').textContent = new Date().getFullYear();
 
-// interactive demo (mirrors your Java tiers exactly)
-const UNIT_PRICE = 75.00;
+/* ------------------------------
+   AUTO-MAP: page name -> Java file
+   discount-calculator.html  ->  Discount_Calculator.java
+   payroll-system.html       ->  Payroll_System.java
+   You can override by setting data-java="Exact_Name.java" on #pageRoot
+--------------------------------*/
+function slugToJavaFile(slug){
+  // 'discount-calculator' -> ['discount', 'calculator'] -> ['Discount','Calculator'] -> 'Discount_Calculator.java'
+  const parts = slug.split('-').filter(Boolean);
+  const pascal = parts.map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('_');
+  return pascal + '.java';
+}
 
+// Determine slug from URL (…/pages/java/discount-calculator.html)
+const page = location.pathname.split('/').pop().replace(/\.html?$/,''); // "discount-calculator"
+const root = document.getElementById('pageRoot');
+
+// Allow manual override with data-java="Exact_Name.java"
+const overrideName = (root.dataset.java || '').trim();
+const javaFile = overrideName || slugToJavaFile(page);
+const javaPath = `../../assets/java/${javaFile}`;
+
+// Update Download button link
+const downloadBtn = document.getElementById('downloadBtn');
+downloadBtn.href = javaPath;
+
+// Show compile/run commands with correct class name (strip .java)
+document.getElementById('cmds').textContent = `javac ${javaFile}
+java ${javaFile.replace(/\.java$/,'')}`;
+
+// Fetch and display source
+const codeEl = document.getElementById('javaCode');
+fetch(javaPath, {cache:'no-store'})
+  .then(r => { if(!r.ok) throw new Error(r.status); return r.text(); })
+  .then(txt => { codeEl.textContent = txt; })
+  .catch(() => { codeEl.textContent = `Source not found: ${javaFile}\nUpload it to /assets/java/ or set data-java="Exact_Name.java" on <main>.`; });
+
+// Copy button
+document.getElementById('copyBtn').addEventListener('click', ()=>{
+  navigator.clipboard.writeText(codeEl.innerText).then(()=> alert('Java code copied!'));
+});
+
+/* ------------------------------
+   Interactive demo (mirrors your logic)
+--------------------------------*/
+const UNIT_PRICE = 75.00;
 function discountRate(qty){
   if (qty >= 100) return 0.50;
   if (qty >= 50)  return 0.40;
@@ -202,19 +245,6 @@ resetBtn.addEventListener('click', ()=>{
   qty.value = '';
   res.style.display = 'none';
   cliMsg.style.display = 'none';
-});
-
-// CODE VIEWER: fetch your source from assets/java/Discount_Calculator.java
-const codeEl = document.getElementById('javaCode');
-fetch('../../assets/java/Discount_Calculator.java', {cache:'no-store'})
-  .then(r => { if(!r.ok) throw new Error(r.status); return r.text(); })
-  .then(txt => { codeEl.textContent = txt; })
-  .catch(err => { codeEl.textContent = 'Source not found. Upload Discount_Calculator.java to /assets/java/'; });
-
-// Copy button
-document.getElementById('copyBtn').addEventListener('click', ()=>{
-  const txt = codeEl.innerText;
-  navigator.clipboard.writeText(txt).then(()=> alert('Java code copied!'));
 });
 </script>
 </body>
