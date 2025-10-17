@@ -1,0 +1,18 @@
+-- Drop existing tables
+DROP TABLE IF EXISTS LessonSchedule;
+DROP TABLE IF EXISTS Horse;
+DROP TABLE IF EXISTS Student;
+
+-- Create Horse and Student tables
+CREATE TABLE Horse (
+	ID SMALLINT UNSIGNED AUTO_INCREMENT,
+	RegisteredName VARCHAR(15),
+	PRIMARY KEY (ID)
+);
+
+CREATE TABLE Student (
+	ID SMALLINT UNSIGNED AUTO_INCREMENT,
+	FirstName VARCHAR(20),
+	LastName VARCHAR(30),
+	PRIMARY KEY (ID)
+);
