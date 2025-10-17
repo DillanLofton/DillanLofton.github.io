@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Horse Lesson Scheduling Database | SQL Labs</title>
+
+<!-- look & feel (same dark theme as your other pages) -->
+<style>
+:root{
+  --bg:#0f1720; --panel:#111827; --text:#e5e7eb; --muted:#9aa4b2;
+  --brand:#ff9900; --border:#1f2937; --card:#0b1220; --badge:#0b1020;
+}
+*{box-sizing:border-box} html,body{margin:0;background:linear-gradient(180deg,var(--bg),#0a1220);
+color:var(--text);font-family:ui-sans-serif,system-ui,Segoe UI,Roboto,Inter}
+a{color:#ffb84d} header{position:sticky;top:0;z-index:40;background:#0f1720cc;
+backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
+.wrap{max-width:1100px;margin:auto;padding:1rem}
+h1{margin:.4rem 0 .2rem} h2{margin:1.4rem 0 .5rem;color:#ffcc80}
+.grid{display:grid;gap:1rem} @media(min-width:900px){.grid{grid-template-columns:1fr 1fr}}
+.card{background:linear-gradient(180deg,var(--card),#0d1424);border:1px solid var(--border);
+border-radius:14px;padding:1rem}
+.badge{display:inline-block;border:1px solid var(--border);background:var(--badge);
+border-radius:999px;padding:.3rem .55rem;margin:.2rem .25rem .2rem 0;color:#cfd8e3;font-size:.85rem}
+.codebox,pre.console{background:#0a0f1a;border:1px solid #1f2937;border-radius:12px;padding:12px;
+overflow:auto}
+.tabs{display:flex;gap:.5rem;margin:.5rem 0}
+.tab{border:1px solid var(--border);background:#0b1020;color:#dbe3ec;border-radius:8px;
+padding:.25rem .55rem;cursor:pointer;font-size:.9rem}
+.tab.active{outline:2px solid rgba(255,153,0,.35)}
+.small{font-size:.9rem;color:var(--muted)}
+kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.85rem}
+.sql-key{color:#93c5fd} .sql-fn{color:#a3e635} .sql-lit{color:#fca5a5}
+.sql-ident{color:#fcd34d}
+</style>
+
+<!-- Prism (basic) just for monospace look; we color with tiny classes above -->
+<link rel="preconnect" href="https://cdn.jsdelivr.net"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+</head>
+<body>
+
+<header><div class="wrap"><a href="../../index.html">← Back to Home</a></div></header>
+<main class="wrap">
+  <h1>Horse Lesson Scheduling Database</h1>
+  <p class="small">
+    A cohesive set of SQL labs: constrained table design, foreign keys, CRUD, joins, and subqueries.
+    All SQL is loaded from the repo under <kbd>/assets/sql/horse-lesson/</kbd>.
+  </p>
+
+  <section class="card">
+    <div class="badge">Tables: Horse • Student • LessonSchedule</div>
+    <div class="badge">Topics: Constraints, FKs, Joins, Subqueries</div>
+    <div class="badge">RDBMS: MySQL-style</div>
+  </section>
+
+  <!-- ===== SECTION: CREATE STUDENT (02-20) ===== -->
+  <section class="card">
+    <h2>02.20 — Create Student table (with constraints)</h2>
+    <div class="tabs">
+      <button class="tab active" data-target="s-create-student-init">initialize.sql</button>
+      <button class="tab" data-target="s-create-student-main">main.sql</button>
+      <button class="tab" data-target="s-create-student-out">console output</button>
+    </div>
+    <pre id="s-create-student-init" class="codebox language-sql" data-src="/assets/sql/horse-lesson/02-20-create-student/initialize.sql"></pre>
+    <pre id="s-create-student-main" class="codebox language-sql" data-src="/assets/sql/horse-lesson/02-20-create-student/main.sql" style="display:none"></pre>
+    <pre id="s-create-student-out" class="console" style="display:none">+-----------+-------------------+------+-----+---------+----------------+
+| Field     | Type              | Null | Key | Default | Extra          |
++-----------+-------------------+------+-----+---------+----------------+
+| ID        | smallint unsigned | NO   | PRI | NULL    | auto_increment |
+| FirstName | varchar(20)       | NO   |     | NULL    |                |
+| LastName  | varchar(30)       | NO   |     | NULL    |                |
+| Street    | varchar(50)       | NO   |     | NULL    |                |
+| City      | varchar(20)       | NO   |     | NULL    |                |
+| State     | char(2)           | NO   |     | TX      |                |
+| Zip       | mediumint unsigned| NO   |     | NULL    |                |
+| Phone     | char(10)          | NO   |     | NULL    |                |
+| Email     | varchar(30)       | YES  | UNI | NULL    |                |
++-----------+-------------------+------+-----+---------+----------------+</pre>
+  </section>
+
+  <!-- ===== SECTION: CREATE LESSONS WITH FKs (02-21) ===== -->
+  <section class="card">
+    <h2>02.21 — Create LessonSchedule (FK constraints)</h2>
+    <p class="small">Composite PK (HorseID, LessonDateTime). ON DELETE CASCADE from Horse,
+    ON DELETE SET NULL from Student.</p>
+    <div class="tabs">
+      <button class="tab active" data-target="s-lessons-init">initialize.sql</button>
+      <button class="tab" data-target="s-lessons-main">main.sql</button>
+      <button class="tab" data-target="s-lessons-out">console output</button>
+    </div>
+    <pre id="s-lessons-init" class="codebox language-sql" data-src="/assets/sql/horse-lesson/02-21-create-lessons-fk/initialize.sql"></pre>
+    <pre id="s-lessons-main" class="codebox language-sql" data-src="/assets/sql/horse-lesson/02-21-create-lessons-fk/main.sql" style="display:none"></pre>
+    <pre id="s-lessons-out" class="console" style="display:none">-- Add a SHOW COLUMNS FROM LessonSchedule; output here when you grab it.</pre>
+  </section>
+
+  <!-- ===== SECTION: SELF JOIN (03-12) ===== -->
+  <section class="card">
+    <h2>03.12 — Self-Join (Employees & Managers)</h2>
+    <div class="tabs">
+      <button class="tab active" data-target="s-self-init">initialize.sql</button>
+      <button class="tab" data-target="s-self-main">main.sql</button>
+      <button class="tab" data-target="s-self-out">console output</button>
+    </div>
+    <pre id="s-self-init" class="codebox language-sql" data-src="/assets/sql/horse-lesson/03-12-self-join/initialize.sql"></pre>
+    <pre id="s-self-main" class="codebox language-sql" data-src="/assets/sql/horse-lesson/03-12-self-join/main.sql" style="display:none"></pre>
+    <pre id="s-self-out" class="console" style="display:none">+-----------+---------+
+| Employee  | Manager |
++-----------+---------+
+| Andy      | Jim     |
+| Angela    | Michael |
+| Dwight    | Michael |
+| Jim       | Michael |
+| Kelly     | Michael |
+| Meredith  | Michael |
+| Michael   | Ryan    |
+| Pam       | Michael |
+| Phyllis   | Andy    |
+| Ryan      | David   |
+| Stanley   | Andy    |
++-----------+---------+</pre>
+  </section>
+
+  <!-- ===== SECTION: INNER JOIN (03-13) ===== -->
+  <section class="card">
+    <h2>03.13 — Inner Join (Lessons with assigned students)</h2>
+    <p class="small">Select lesson datetime, horse ID, and student first/last name. Exclude unassigned (StudentID IS NULL).</p>
+    <div class="tabs">
+      <button class="tab active" data-target="s-inner-init">initialize.sql</button>
+      <button class="tab" data-target="s-inner-main">main.sql</button>
+      <button class="tab" data-target="s-inner-out">console output</button>
+    </div>
+    <pre id="s-inner-init" class="codebox language-sql" data-src="/assets/sql/horse-lesson/03-13-inner-join/initialize.sql"></pre>
+    <pre id="s-inner-main" class="codebox language-sql" data-src="/assets/sql/horse-lesson/03-13-inner-join/main.sql" style="display:none"></pre>
+    <pre id="s-inner-out" class="console" style="display:none">+---------------------+--------+-----------+----------+
+| LessonDateTime      | HorseID| FirstName | LastName |
++---------------------+--------+-----------+----------+
+| 2019-02-01 10:00:00 | 2      | Chales    | Dixon    |
+| 2019-02-01 11:30:00 | 4      | Amir      | Saliba   |
+| 2019-02-03 13:00:00 | 4      | Amir      | Saliba   |
+| 2020-02-01 08:30:00 | 1      | Maria     | Gonzalez |
+| 2020-02-01 08:30:00 | 4      | Wei       | Zhang    |
+| 2020-02-01 09:00:00 | 1      | Chales    | Dixon    |
+| 2020-02-01 09:30:00 | 4      | Wei       | Zhang    |
+| 2020-02-01 09:30:00 | 2      | Amir      | Saliba   |
+| 2020-02-01 10:00:00 | 1      | Karin     | White    |
++---------------------+--------+-----------+----------+</pre>
+  </section>
+
+  <!-- ===== SECTION: MULTI JOIN incl. NULLs (03-14) ===== -->
+  <section class="card">
+    <h2>03.14 — Multi-Join (Show unassigned slots for 2020-02-01)</h2>
+    <p class="small">Three-way join over LessonSchedule, Student, Horse. Use DATE() filter; keep NULL students.</p>
+    <div class="tabs">
+      <button class="tab active" data-target="s-multi-init">initialize.sql</button>
+      <button class="tab" data-target="s-multi-main">main.sql</button>
+      <button class="tab" data-target="s-multi-out">console output</button>
+    </div>
+    <pre id="s-multi-init" class="codebox language-sql" data-src="/assets/sql/horse-lesson/03-14-multi-join/initialize.sql"></pre>
+    <pre id="s-multi-main" class="codebox language-sql" data-src="/assets/sql/horse-lesson/03-14-multi-join/main.sql" style="display:none"></pre>
+    <pre id="s-multi-out" class="console" style="display:none">+---------------------+-----------+----------+----------------+
+| LessonDateTime      | FirstName | LastName | RegisteredName |
++---------------------+-----------+----------+----------------+
+| 2020-02-01 08:30:00 | Maria     | Gonzalez | Babe           |
+| 2020-02-01 08:30:00 | NULL      | NULL     | Independence   |
+| 2020-02-01 08:30:00 | Wei       | Zhang    | Thunder        |
+| 2020-02-01 09:00:00 | NULL      | NULL     | Independence   |
+| 2020-02-01 09:00:00 | Wei       | Zhang    | Thunder        |
+| 2020-02-01 09:30:00 | Chales    | Dixon    | Babe           |
+| 2020-02-01 09:30:00 | Amir      | Saliba   | Independence   |
+| 2020-02-01 10:00:00 | Karin     | White    | Babe           |
+| 2020-02-01 10:00:00 | NULL      | NULL     | Independence   |
+| 2020-02-01 10:00:00 | NULL      | NULL     | Thunder        |
++---------------------+-----------+----------+----------------+</pre>
+  </section>
+
+  <!-- ===== SECTION: SUBQUERY (03-15) ===== -->
+  <section class="card">
+    <h2>03.15 — Subquery (Above-average horse height)</h2>
+    <div class="tabs">
+      <button class="tab active" data-target="s-subq-init">initialize.sql</button>
+      <button class="tab" data-target="s-subq-main">main.sql</button>
+      <button class="tab" data-target="s-subq-out">console output</button>
+    </div>
+    <pre id="s-subq-init" class="codebox language-sql" data-src="/assets/sql/horse-lesson/03-15-subquery/initialize.sql"></pre>
+    <pre id="s-subq-main" class="codebox language-sql" data-src="/assets/sql/horse-lesson/03-15-subquery/main.sql" style="display:none"></pre>
+    <pre id="s-subq-out" class="console" style="display:none">+-------------+----------------+--------+
+| breed       | Registeredname | height |
++-------------+----------------+--------+
+| Holsteiner  | Space Man      | 18.0   |
+| Paint       | Thunder        | 16.1   |
+| Holsteiner  | Independence   | 16.0   |
+| Egyptian Arab| Alexis        | 15.9   |
+| Quarter Horse| Babe          | 15.3   |
+| Saddlebred  | Ellie          | 15.0   |
++-------------+----------------+--------+</pre>
+  </section>
+
+  <!-- (You can add your earlier Horse labs 02.15–02.19 here, or leave them on the separate page.) -->
+
+</main>
+
+<script>
+// tiny loader to pull sql files from your repo into the code blocks
+document.querySelectorAll('[data-src]').forEach(async el=>{
+  try{
+    const res = await fetch(el.getAttribute('data-src'));
+    el.textContent = await res.text();
+    Prism.highlightElement(el);
+  }catch(e){
+    el.textContent = '-- could not load file: ' + el.getAttribute('data-src');
+  }
+});
+// tabs
+document.querySelectorAll('.tab').forEach(btn=>{
+  btn.addEventListener('click', () => {
+    const card = btn.closest('.card');
+    card.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    card.querySelectorAll('.codebox, .console').forEach(p=>p.style.display='none');
+    card.querySelector('#'+btn.dataset.target).style.display='block';
+  })
+});
+</script>
+</body>
+</html>
