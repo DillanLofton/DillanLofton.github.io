@@ -366,6 +366,9 @@
 <footer>© <span id="yr"></span> Dillan Lofton • SQL – Horse Lesson Database</footer>
 
 <script>
+  // Set current year
+  document.getElementById('yr').textContent = new Date().getFullYear();
+
   // Utility to fetch SQL into <code> and highlight
   function loadSQL(id, path){
     const el = document.getElementById(id);
@@ -375,12 +378,32 @@
       .catch(() => { el.textContent = 'Could not load: ' + path; });
   }
 
-  // Map code blocks to your repo paths (root-relative!)
+  // Map code blocks to your repo paths
   const files = {
     '0215-init': '/assets/sql/horse-lesson/02-15-select/initialize.sql',
     '0215-main': '/assets/sql/horse-lesson/02-15-select/main.sql',
-
     '0216-init': '/assets/sql/horse-lesson/02-16-insert/initialize.sql',
     '0216-main': '/assets/sql/horse-lesson/02-16-insert/main.sql',
+    '0217-init': '/assets/sql/horse-lesson/02-17-update/initialize.sql',
+    '0217-main': '/assets/sql/horse-lesson/02-17-update/main.sql',
+    '0218-init': '/assets/sql/horse-lesson/02-18-delete/initialize.sql',
+    '0218-main': '/assets/sql/horse-lesson/02-18-delete/main.sql',
+    '0219-init': '/assets/sql/horse-lesson/02-19-create-horse/initialize.sql',
+    '0219-main': '/assets/sql/horse-lesson/02-19-create-horse/main.sql',
+    '0220-init': '/assets/sql/horse-lesson/02-20-create-student/initialize.sql',
+    '0220-main': '/assets/sql/horse-lesson/02-20-create-student/main.sql',
+    '0221-init': '/assets/sql/horse-lesson/02-21-create-lessons-fk/initialize.sql',
+    '0221-main': '/assets/sql/horse-lesson/02-21-create-lessons-fk/main.sql',
+    '0312-init': '/assets/sql/horse-lesson/03-12-self-join/initialize.sql',
+    '0312-main': '/assets/sql/horse-lesson/03-12-self-join/main.sql',
+    '0313-init': '/assets/sql/horse-lesson/03-13-inner-join/initialize.sql',
+    '0313-main': '/assets/sql/horse-lesson/03-13-inner-join/main.sql',
+    '0314-init': '/assets/sql/horse-lesson/03-14-multi-join/initialize.sql',
+    '0314-main': '/assets/sql/horse-lesson/03-14-multi-join/main.sql',
+    '0315-init': '/assets/sql/horse-lesson/03-15-subquery/initialize.sql',
+    '0315-main': '/assets/sql/horse-lesson/03-15-subquery/main.sql'
+  };
 
-   
+  // Load all files
+  Object.keys(files).forEach(id => loadSQL(id, files[id]));
+</script>
