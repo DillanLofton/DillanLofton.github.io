@@ -35,7 +35,7 @@
   <section class="card lab">
     <h3>Init – Drop/Create & Seed Data</h3>
     <p class="note">Reset the database for repeatable labs.</p>
-    <pre><code>DROP TABLE IF EXISTS Horse;
+    <pre>DROP TABLE IF EXISTS Horse;
 
 CREATE TABLE Horse (
   ID SMALLINT UNSIGNED,
@@ -53,7 +53,7 @@ VALUES
   (4,'Thunder','Paint',16.1,'2019-05-01'),
   (5,'Alexis','Egyptian Arab',15.9,'2018-02-01'),
   (6,'Space Man','Holsteiner',18.0,'2017-09-21'),
-  (7,'Lexie','Paint',16.2,'2020-02-19');</code></pre>
+  (7,'Lexie','Paint',16.2,'2020-02-19');</pre>
 
     <details>
       <summary><strong>Simulated Output (SELECT * FROM Horse)</strong></summary>
@@ -76,7 +76,7 @@ VALUES
   <section class="card lab">
     <h3>2.19 – Create Horse table with constraints</h3>
     <p class="note">Primary key, NOT NULL, CHECK constraints for domain integrity.</p>
-<pre><code>CREATE TABLE Horse (
+<pre>CREATE TABLE Horse (
   ID SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   RegisteredName VARCHAR(15) NOT NULL,
   Breed VARCHAR(20)
@@ -84,7 +84,7 @@ VALUES
   Height DECIMAL(3,1) CHECK (Height >= 10.0 AND Height <= 20.0),
   BirthDate DATE     CHECK (BirthDate >= '2015-01-01')
 );
-SHOW COLUMNS FROM Horse;</code></pre>
+SHOW COLUMNS FROM Horse;</pre>
 
     <details><summary><strong>Simulated Output (SHOW COLUMNS)</strong></summary>
       <table>
@@ -104,13 +104,13 @@ SHOW COLUMNS FROM Horse;</code></pre>
   <section class="card lab">
     <h3>2.16 – Insert rows into Horse table</h3>
     <p class="note">Insert the four sample records shown in the lab and verify with a SELECT.</p>
-<pre><code>INSERT INTO Horse (RegisteredName,Breed,Height,BirthDate) VALUES
+<pre>INSERT INTO Horse (RegisteredName,Breed,Height,BirthDate) VALUES
   ('Babe','Quarter Horse',15.3,'2015-02-10'),
   ('Independence','Holsteiner',16.0,'2017-03-13'),
   ('Ellie','Saddlebred',15.0,'2016-12-22'),
   (NULL,'Egyptian Arab',14.9,'2019-10-12');
 
-SELECT * FROM Horse;</code></pre>
+SELECT * FROM Horse;</pre>
 
     <details><summary><strong>Simulated Output</strong></summary>
       <table>
@@ -151,11 +151,11 @@ WHERE Height BETWEEN 15.0 AND 16.0
   <section class="card lab">
     <h3>2.17 – Update rows in Horse table</h3>
     <p class="note">1) Set height to 15.6 for ID 2 &nbsp; 2) Rename ID 4 to “Lady Luck” and set BirthDate to 2015-05-01 &nbsp; 3) Set <code>Breed=NULL</code> for horses born on/after 2016-12-22.</p>
-<pre><code>UPDATE Horse SET Height = 15.6 WHERE ID = 2;
+<pre>UPDATE Horse SET Height = 15.6 WHERE ID = 2;
 UPDATE Horse SET RegisteredName = 'Lady Luck', BirthDate = '2015-05-01' WHERE ID = 4;
 UPDATE Horse SET Breed = NULL WHERE BirthDate >= '2016-12-22';
 
-SELECT * FROM Horse;</code></pre>
+SELECT * FROM Horse;</pre>
 
     <details><summary><strong>Simulated Output</strong></summary>
       <table>
