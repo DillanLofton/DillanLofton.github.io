@@ -79,18 +79,18 @@
     <p><a class="btn" href="../../assets/sql/movie/alter/main.sql" download>Download main.sql</a></p>
 
     <details open>
-      <summary><strong>Simulated Output – SHOW COLUMNS FROM Movie;</strong></summary>
-      <table>
-        <thead><tr><th>Field</th><th>Type</th><th>Null</th><th>Key</th><th>Default</th><th>Extra</th></tr></thead>
-        <tbody>
-          <tr><td>ID</td><td>int</td><td>NO</td><td>PRI</td><td>NULL</td><td></td></tr>
-          <tr><td>Title</td><td>varchar(50)</td><td>YES</td><td></td><td>NULL</td><td></td></tr>
-          <tr><td>RatingCode</td><td>varchar(10)</td><td>YES</td><td></td><td>NULL</td><td></td></tr>
-          <tr><td>ReleaseYear</td><td>smallint</td><td>YES</td><td></td><td>NULL</td><td></td></tr>
-          <tr><td>Producer</td><td>varchar(50)</td><td>YES</td><td></td><td>NULL</td><td></td></tr>
-        </tbody>
-      </table>
-      <p class="note">Genre removed; Year renamed & converted to SMALLINT; Producer added.</p>
+  <summary><strong>Simulated Output – SHOW COLUMNS FROM Movie;</strong></summary>
+  <table>
+    <thead><tr><th>Field</th><th>Type</th><th>Null</th><th>Key</th><th>Default</th><th>Extra</th></tr></thead>
+    <tbody>
+      <tr><td>ID</td><td>int unsigned</td><td>YES</td><td></td><td>NULL</td><td></td></tr>
+      <tr><td>Title</td><td>varchar(30)</td><td>YES</td><td></td><td>NULL</td><td></td></tr>
+      <tr><td>RatingCode</td><td>varchar(5)</td><td>YES</td><td></td><td>NULL</td><td></td></tr>
+      <tr><td>ReleaseYear</td><td>smallint</td><td>YES</td><td></td><td>NULL</td><td></td></tr>
+      <tr><td>Producer</td><td>varchar(50)</td><td>YES</td><td></td><td>NULL</td><td></td></tr>
+    </tbody>
+  </table>
+  <p class="note">Matches your zyBooks output (int unsigned ID, Title(30), RatingCode(5), ReleaseYear smallint, Producer(50)).</p>
     </details>
   </section>
 
@@ -108,16 +108,17 @@
     <p><a class="btn" href="../../assets/sql/movie/group/main.sql" download>Download main.sql</a></p>
 
     <details open>
-      <summary><strong>Simulated Output – Movies per Year</strong></summary>
-      <table>
-        <thead><tr><th>ReleaseYear</th><th>Total</th></tr></thead>
-        <tbody>
-          <tr><td>2019</td><td>2</td></tr>
-          <tr><td>2020</td><td>3</td></tr>
-          <tr><td>2021</td><td>1</td></tr>
-        </tbody>
-      </table>
-      <p class="note">Example counts; your exact numbers depend on the data in <code>initialize.sql</code>.</p>
+  <summary><strong>Simulated Output – Movies per Year</strong></summary>
+  <table>
+    <thead><tr><th>Year</th><th>count(*)</th></tr></thead>
+    <tbody>
+      <tr><td>2020</td><td>5</td></tr>
+      <tr><td>2019</td><td>2</td></tr>
+      <tr><td>2008</td><td>1</td></tr>
+      <tr><td>2010</td><td>1</td></tr>
+      <tr><td>2017</td><td>1</td></tr>
+    </tbody>
+  </table>
     </details>
   </section>
 
@@ -135,16 +136,23 @@
     <p><a class="btn" href="../../assets/sql/movie/leftjoin/main.sql" download>Download main.sql</a></p>
 
     <details open>
-      <summary><strong>Simulated Output – All Movies (including no rating)</strong></summary>
-      <table>
-        <thead><tr><th>Title</th><th>ReleaseYear</th><th>Description</th></tr></thead>
-        <tbody>
-          <tr><td>Skyfall</td><td>2012</td><td>PG-13 – Parents Strongly Cautioned</td></tr>
-          <tr><td>Inside Out</td><td>2015</td><td>PG – Parental Guidance Suggested</td></tr>
-          <tr><td>Indie Film</td><td>2021</td><td>NULL</td></tr>
-        </tbody>
-      </table>
-      <p class="note">LEFT JOIN includes movies with <code>NULL</code> RatingCode.</p>
+  <summary><strong>Simulated Output – All Movies (including no rating)</strong></summary>
+  <table>
+    <thead><tr><th>Title</th><th>Year</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>Becoming</td><td>2020</td><td>Parental Guidance Suggested</td></tr>
+      <tr><td>Den of Thieves</td><td>2019</td><td>Restricted</td></tr>
+      <tr><td>Arctic Dogs</td><td>2019</td><td>Parental Guidance Suggested</td></tr>
+      <tr><td>Dangerous Lies</td><td>2020</td><td>NULL</td></tr>
+      <tr><td>All Day and a Night</td><td>2020</td><td>Restricted</td></tr>
+      <tr><td>Extraction</td><td>2020</td><td>Restricted</td></tr>
+      <tr><td>Madagascar: Escape 2 Africa</td><td>2008</td><td>Parental Guidance Suggested</td></tr>
+      <tr><td>The Willoughbys</td><td>2020</td><td>Parental Guidance Suggested</td></tr>
+      <tr><td>Despicable Me</td><td>2010</td><td>Parental Guidance Suggested</td></tr>
+      <tr><td>Armed Response</td><td>2017</td><td>Restricted</td></tr>
+    </tbody>
+  </table>
+  <p class="note">LEFT JOIN shows all movies; ones without a matching rating display <code>NULL</code>.</p>
     </details>
   </section>
 </main>
