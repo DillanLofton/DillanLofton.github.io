@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SQL – Movie Database Labs | Dillan Lofton</title>
+
+<!-- Prism.js syntax highlighting -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-sql.min.js"></script>
+
+<style>
+  :root{--bg:#0f1720;--text:#e5e7eb;--muted:#9ca3af;--card:#0b1220;--card2:#0d1424;--border:#1f2937;--brand:#ff9900}
+  *{box-sizing:border-box}
+  body{margin:0;background:linear-gradient(180deg,var(--bg),#0a1220);color:var(--text);
+       font-family:ui-sans-serif,system-ui,Segoe UI,Roboto;line-height:1.6}
+  a{color:#ffb84d;text-decoration:none}
+  header{position:sticky;top:0;background:rgba(17,24,39,.6);backdrop-filter:blur(8px);
+         border-bottom:1px solid var(--border);padding:.8rem}
+  .wrap{max-width:980px;margin:auto;padding:1rem}
+  h1{margin:.2rem 0 .2rem}
+  .note{color:var(--muted)}
+  .card{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--border);
+        border-radius:14px;padding:1.1rem;margin:1rem 0}
+  .btn{display:inline-flex;align-items:center;gap:.4rem;background:linear-gradient(180deg,var(--brand),#f59e0b);
+       color:#111;font-weight:700;padding:.45rem .75rem;border-radius:.55rem}
+  pre[class*="language-"]{background:#0a1120;border:1px solid var(--border);border-radius:10px;padding:.75rem}
+  code[class*="language-"]{font-size:.92rem}
+  table{width:100%;border-collapse:collapse;margin-top:.5rem}
+  th,td{border-bottom:1px solid var(--border);padding:.4rem .35rem;text-align:left}
+  details summary{cursor:pointer}
+  footer{border-top:1px solid var(--border);color:#9ca3af;text-align:center;padding:1.2rem;margin-top:1.2rem}
+</style>
+</head>
+<body>
+<header><div class="wrap"><a href="index.html">← Back to SQL</a></div></header>
+
+<main class="wrap">
+  <h1>Movie Database Labs</h1>
+  <p class="note">Each lab has its own <code>initialize.sql</code> and <code>main.sql</code>. Run initialize first, then main.</p>
+
+  <!-- 02-13 CREATE MOVIE TABLE -->
+  <section class="card">
+    <h3>2.13 – Create Movie table</h3>
+    <p class="note">Columns: <em>ID</em> (positive int ≤ 65000), <em>Title</em> (VARCHAR(50)), <em>Rating</em> (CHAR(4)), <em>ReleaseDate</em> (DATE), <em>Budget</em> (DECIMAL(8,2)).</p>
+
+    <h4>initialize.sql</h4>
+    <pre><code class="language-sql" id="create-init">Loading…</code></pre>
+    <p><a class="btn" href="../../assets/sql/movie/create/initialize.sql" download>Download initialize.sql</a></p>
+
+    <h4>main.sql</h4>
+    <pre><code class="language-sql" id="create-main">Loading…</code></pre>
+    <p><a class="btn" href="../../assets/sql/movie/create/main.sql" download>Download main.sql</a></p>
+
+    <details open>
+      <summary><strong>Simulated Output – SHOW TABLES;</strong></summary>
+      <table>
+        <thead><tr><th>Tables_in_db</th></tr></thead>
+        <tbody>
+          <tr><td>Movie</td></tr>
+        </tbody>
+      </table>
+      <p class="note">Confirms the <code>Movie</code> table was created.</p>
+    </details>
+  </section>
+
+  <!-- 02-14 ALTER MOVIE TABLE -->
+  <section class="card">
+    <h3>2.14 – Alter Movie table</h3>
+    <p class="note">Add <em>Producer VARCHAR(50)</em>, drop <em>Genre</em>, rename <em>Year</em> → <em>ReleaseYear SMALLINT</em>.</p>
+
+    <h4>initialize.sql</h4>
+    <pre><code class="language-sql" id="alter-init">Loading…</code></pre>
+    <p><a class="btn" href="../../assets/sql/movie/alter/initialize.sql" download>Download initialize.sql</a></p>
+
+    <h4>main.sql</h4>
+    <pre><code class="language-sql" id="alter-main">Loading…</code></pre>
+    <p><a class="btn" href="../../assets/sql/movie/alter/main.sql" download>Download main.sql</a></p>
+
+    <details open>
+      <summary><strong>Simulated Output – SHOW COLUMNS FROM Movie;</strong></summary>
+      <table>
+        <thead><tr><th>Field</th><th>Type</th><th>Null</th><th>Key</th><th>Default</th><th>Extra</th></tr></thead>
+        <tbody>
+          <tr><td>ID</td><td>int</td><td>NO</td><td>PRI</td><td>NULL</td><td></td></tr>
+          <tr><td>Title</td><td>varchar(50)</td><td>YES</td><td></td><td>NULL</td><td></td></tr>
+          <tr><td>RatingCode</td><td>varchar(10)</td><td>YES</td><td></td><td>NULL</td><td></td></tr>
+          <tr><td>ReleaseYear</td><td>smallint</td><td>YES</td><td></td><td>NULL</td><td></td></tr>
+          <tr><td>Producer</td><td>varchar(50)</td><td>YES</td><td></td><td>NULL</td><td></td></tr>
+        </tbody>
+      </table>
+      <p class="note">Genre removed; Year renamed & converted to SMALLINT; Producer added.</p>
+    </details>
+  </section>
+
+  <!-- 03-10 GROUP BY YEAR -->
+  <section class="card">
+    <h3>3.10 – Select number of movies grouped by year</h3>
+    <p class="note">Use <code>COUNT(*)</code> and <code>GROUP BY ReleaseYear</code> (or <code>Year</code> per your schema).</p>
+
+    <h4>initialize.sql</h4>
+    <pre><code class="language-sql" id="group-init">Loading…</code></pre>
+    <p><a class="btn" href="../../assets/sql/movie/group/initialize.sql" download>Download initialize.sql</a></p>
+
+    <h4>main.sql</h4>
+    <pre><code class="language-sql" id="group-main">Loading…</code></pre>
+    <p><a class="btn" href="../../assets/sql/movie/group/main.sql" download>Download main.sql</a></p>
+
+    <details open>
+      <summary><strong>Simulated Output – Movies per Year</strong></summary>
+      <table>
+        <thead><tr><th>ReleaseYear</th><th>Total</th></tr></thead>
+        <tbody>
+          <tr><td>2019</td><td>2</td></tr>
+          <tr><td>2020</td><td>3</td></tr>
+          <tr><td>2021</td><td>1</td></tr>
+        </tbody>
+      </table>
+      <p class="note">Example counts; your exact numbers depend on the data in <code>initialize.sql</code>.</p>
+    </details>
+  </section>
+
+  <!-- 03-11 LEFT JOIN MOVIE → RATING -->
+  <section class="card">
+    <h3>3.11 – Select movie rating with LEFT JOIN</h3>
+    <p class="note">Select <em>Title</em>, <em>ReleaseYear</em>, <em>Rating Description</em> using <code>LEFT JOIN Rating ON Movie.RatingCode = Rating.Code</code>.</p>
+
+    <h4>initialize.sql</h4>
+    <pre><code class="language-sql" id="leftjoin-init">Loading…</code></pre>
+    <p><a class="btn" href="../../assets/sql/movie/leftjoin/initialize.sql" download>Download initialize.sql</a></p>
+
+    <h4>main.sql</h4>
+    <pre><code class="language-sql" id="leftjoin-main">Loading…</code></pre>
+    <p><a class="btn" href="../../assets/sql/movie/leftjoin/main.sql" download>Download main.sql</a></p>
+
+    <details open>
+      <summary><strong>Simulated Output – All Movies (including no rating)</strong></summary>
+      <table>
+        <thead><tr><th>Title</th><th>ReleaseYear</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>Skyfall</td><td>2012</td><td>PG-13 – Parents Strongly Cautioned</td></tr>
+          <tr><td>Inside Out</td><td>2015</td><td>PG – Parental Guidance Suggested</td></tr>
+          <tr><td>Indie Film</td><td>2021</td><td>NULL</td></tr>
+        </tbody>
+      </table>
+      <p class="note">LEFT JOIN includes movies with <code>NULL</code> RatingCode.</p>
+    </details>
+  </section>
+</main>
+
+<footer>© <span id="yr"></span> Dillan Lofton • SQL – Movie Database</footer>
+
+<script>
+  // fetch a .sql file into a <code id="..."> and then highlight it
+  function loadSQL(codeId, url){
+    const el = document.getElementById(codeId);
+    fetch(url)
+      .then(r => r.ok ? r.text() : Promise.reject(r.status))
+      .then(txt => { el.textContent = txt; Prism.highlightElement(el); })
+      .catch(() => { el.textContent = 'Could not load: ' + url; });
+  }
+
+  // paths match your repo: /assets/sql/movie/<folder>/{initialize.sql,main.sql}
+  loadSQL('create-init','../../assets/sql/movie/create/initialize.sql');
+  loadSQL('create-main','../../assets/sql/movie/create/main.sql');
+
+  loadSQL('alter-init','../../assets/sql/movie/alter/initialize.sql');
+  loadSQL('alter-main','../../assets/sql/movie/alter/main.sql');
+
+  loadSQL('group-init','../../assets/sql/movie/group/initialize.sql');
+  loadSQL('group-main','../../assets/sql/movie/group/main.sql');
+
+  loadSQL('leftjoin-init','../../assets/sql/movie/leftjoin/initialize.sql');
+  loadSQL('leftjoin-main','../../assets/sql/movie/leftjoin/main.sql');
+
+  document.getElementById('yr').textContent=new Date().getFullYear();
+</script>
+</body>
+</html>
