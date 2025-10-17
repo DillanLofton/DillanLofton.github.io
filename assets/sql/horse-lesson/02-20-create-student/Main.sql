@@ -1,0 +1,15 @@
+-- Initialize database
+source Initialize.sql
+
+CREATE TABLE Student (
+    ID SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    FirstName VARCHAR (20) NOT NULL,
+    LastName VARCHAR(30) NOT NULL,
+    Street VARCHAR (50) NOT NULL, 
+    City VARCHAR (20) NOT NULL,
+    State CHAR(2) NOT NULL DEFAULT 'TX',
+    Zip MEDIUMINT UNSIGNED NOT NULL,
+    Phone CHAR(10) NOT NULL,
+    Email VARCHAR(30) UNIQUE
+); 
+SHOW COLUMNS FROM Student
