@@ -18,75 +18,31 @@
   pre,code{background:#0a1120;border:1px solid var(--border);border-radius:10px;padding:.55rem;white-space:pre-wrap;overflow-wrap:break-word;font-size:.9rem;color:#93c5fd}
   table{width:100%;border-collapse:collapse;margin-top:.5rem}
   th,td{border-bottom:1px solid var(--border);padding:.4rem .35rem;text-align:left}
-  .lab h3{margin:.2rem 0 .4rem}
   details summary{cursor:pointer}
   footer{border-top:1px solid var(--border);color:#9ca3af;text-align:center;padding:1.2rem;margin-top:1.2rem}
 </style>
 </head>
 <body>
 <header><div class="wrap"><a href="index.html">← Back to SQL</a></div></header>
-
 <main class="wrap">
   <h1>Horse Database Labs</h1>
-  <p class="note">Relational DB basics with the <code>Horse</code> table: schema + CRUD + filters. Includes your final SQL and simulated outputs.</p>
-  <p><a class="btn" href="../../assets/sql/horse-Initialize.sql" download>Download Initialize Script (.sql)</a></p>
-
-  <!-- INIT -->
-  <section class="card lab">
-    <h3>Init – Drop/Create & Seed Data</h3>
-    <p class="note">Reset the database for repeatable labs.</p>
-    <pre>DROP TABLE IF EXISTS Horse;
-
-CREATE TABLE Horse (
-  ID SMALLINT UNSIGNED,
-  RegisteredName VARCHAR(15),
-  Breed VARCHAR(20),
-  Height DECIMAL(3,1),
-  BirthDate DATE
-);
-
-INSERT INTO Horse
-VALUES 
-  (1,'Babe','Quarter Horse',15.3,'2015-02-10'),
-  (2,'Independence','Holsteiner',16.0,'2011-03-13'),
-  (3,'Ellie','Saddlebred',15.0,'2016-12-22'),
-  (4,'Thunder','Paint',16.1,'2019-05-01'),
-  (5,'Alexis','Egyptian Arab',15.9,'2018-02-01'),
-  (6,'Space Man','Holsteiner',18.0,'2017-09-21'),
-  (7,'Lexie','Paint',16.2,'2020-02-19');</pre>
-
-    <details>
-      <summary><strong>Simulated Output (SELECT * FROM Horse)</strong></summary>
-      <table>
-        <thead><tr><th>ID</th><th>RegisteredName</th><th>Breed</th><th>Height</th><th>BirthDate</th></tr></thead>
-        <tbody>
-          <tr><td>1</td><td>Babe</td><td>Quarter Horse</td><td>15.3</td><td>2015-02-10</td></tr>
-          <tr><td>2</td><td>Independence</td><td>Holsteiner</td><td>16.0</td><td>2011-03-13</td></tr>
-          <tr><td>3</td><td>Ellie</td><td>Saddlebred</td><td>15.0</td><td>2016-12-22</td></tr>
-          <tr><td>4</td><td>Thunder</td><td>Paint</td><td>16.1</td><td>2019-05-01</td></tr>
-          <tr><td>5</td><td>Alexis</td><td>Egyptian Arab</td><td>15.9</td><td>2018-02-01</td></tr>
-          <tr><td>6</td><td>Space Man</td><td>Holsteiner</td><td>18.0</td><td>2017-09-21</td></tr>
-          <tr><td>7</td><td>Lexie</td><td>Paint</td><td>16.2</td><td>2020-02-19</td></tr>
-        </tbody>
-      </table>
-    </details>
-  </section>
+  <p class="note">Each lab has its own <code>initialize.sql</code> and <code>main.sql</code>. Run initialize first, then main.</p>
 
   <!-- 2.19 CREATE -->
-  <section class="card lab">
+  <section class="card">
     <h3>2.19 – Create Horse table with constraints</h3>
-    <p class="note">Primary key, NOT NULL, CHECK constraints for domain integrity.</p>
-<pre>CREATE TABLE Horse (
-  ID SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  RegisteredName VARCHAR(15) NOT NULL,
-  Breed VARCHAR(20)
-    CHECK (Breed IN ('Egyptian Arab','Holsteiner','Quarter Horse','Paint','Saddlebred')),
-  Height DECIMAL(3,1) CHECK (Height >= 10.0 AND Height <= 20.0),
-  BirthDate DATE     CHECK (BirthDate >= '2015-01-01')
-);
-SHOW COLUMNS FROM Horse;</pre>
+    <p class="note">Primary key, NOT NULL, and domain checks for Breed, Height, BirthDate.</p>
 
-    <details><summary><strong>Simulated Output (SHOW COLUMNS)</strong></summary>
+    <h4>initialize.sql</h4>
+    <pre id="create-init">Loading…</pre>
+    <p><a class="btn" href="../../assets/sql/horse/create/initialize.sql" download>Download initialize.sql</a></p>
+
+    <h4>main.sql</h4>
+    <pre id="create-main">Loading…</pre>
+    <p><a class="btn" href="../../assets/sql/horse/create/main.sql" download>Download main.sql</a></p>
+
+    <details open>
+      <summary><strong>Simulated Output – SHOW COLUMNS FROM Horse</strong></summary>
       <table>
         <thead><tr><th>Field</th><th>Type</th><th>Null</th><th>Key</th><th>Default</th><th>Extra</th></tr></thead>
         <tbody>
@@ -97,22 +53,25 @@ SHOW COLUMNS FROM Horse;</pre>
           <tr><td>BirthDate</td><td>date</td><td>YES</td><td></td><td>NULL</td><td></td></tr>
         </tbody>
       </table>
+      <p class="note">Matches your zyBooks 2.19 result.</p>
     </details>
   </section>
 
   <!-- 2.16 INSERT -->
-  <section class="card lab">
+  <section class="card">
     <h3>2.16 – Insert rows into Horse table</h3>
-    <p class="note">Insert the four sample records shown in the lab and verify with a SELECT.</p>
-<pre>INSERT INTO Horse (RegisteredName,Breed,Height,BirthDate) VALUES
-  ('Babe','Quarter Horse',15.3,'2015-02-10'),
-  ('Independence','Holsteiner',16.0,'2017-03-13'),
-  ('Ellie','Saddlebred',15.0,'2016-12-22'),
-  (NULL,'Egyptian Arab',14.9,'2019-10-12');
+    <p class="note">Insert four sample rows and verify with a SELECT.</p>
 
-SELECT * FROM Horse;</pre>
+    <h4>initialize.sql</h4>
+    <pre id="insert-init">Loading…</pre>
+    <p><a class="btn" href="../../assets/sql/horse/insert/initialize.sql" download>Download initialize.sql</a></p>
 
-    <details><summary><strong>Simulated Output</strong></summary>
+    <h4>main.sql</h4>
+    <pre id="insert-main">Loading…</pre>
+    <p><a class="btn" href="../../assets/sql/horse/insert/main.sql" download>Download main.sql</a></p>
+
+    <details open>
+      <summary><strong>Simulated Output – SELECT * FROM Horse</strong></summary>
       <table>
         <thead><tr><th>RegisteredName</th><th>Breed</th><th>Height</th><th>BirthDate</th></tr></thead>
         <tbody>
@@ -125,39 +84,21 @@ SELECT * FROM Horse;</pre>
     </details>
   </section>
 
-  <!-- 2.15 SELECT LOGIC -->
-  <section class="card lab">
-    <h3>2.15 – Select horses with logical operators</h3>
-    <p class="note">Return RegisteredName, Height, BirthDate where <code>Height BETWEEN 15.0 AND 16.0</code> OR <code>BirthDate &gt;= '2020-01-01'</code>.</p>
-<pre><code>SELECT RegisteredName, Height, BirthDate
-FROM Horse
-WHERE Height BETWEEN 15.0 AND 16.0
-   OR BirthDate >= '2020-01-01';</code></pre>
-
-    <details><summary><strong>Simulated Output</strong></summary>
-      <table>
-        <thead><tr><th>RegisteredName</th><th>Height</th><th>BirthDate</th></tr></thead>
-        <tbody>
-          <tr><td>Babe</td><td>15.3</td><td>2015-02-10</td></tr>
-          <tr><td>Independence</td><td>16.0</td><td>2017-03-13</td></tr>
-          <tr><td>Ellie</td><td>15.0</td><td>2016-12-22</td></tr>
-          <tr><td>Lexie</td><td>16.2</td><td>2020-02-19</td></tr>
-        </tbody>
-      </table>
-    </details>
-  </section>
-
   <!-- 2.17 UPDATE -->
-  <section class="card lab">
+  <section class="card">
     <h3>2.17 – Update rows in Horse table</h3>
-    <p class="note">1) Set height to 15.6 for ID 2 &nbsp; 2) Rename ID 4 to “Lady Luck” and set BirthDate to 2015-05-01 &nbsp; 3) Set <code>Breed=NULL</code> for horses born on/after 2016-12-22.</p>
-<pre>UPDATE Horse SET Height = 15.6 WHERE ID = 2;
-UPDATE Horse SET RegisteredName = 'Lady Luck', BirthDate = '2015-05-01' WHERE ID = 4;
-UPDATE Horse SET Breed = NULL WHERE BirthDate >= '2016-12-22';
+    <p class="note">Set height for ID 2, rename ID 4 to “Lady Luck” &amp; set date, NULL breed for births ≥ 2016-12-22.</p>
 
-SELECT * FROM Horse;</pre>
+    <h4>initialize.sql</h4>
+    <pre id="update-init">Loading…</pre>
+    <p><a class="btn" href="../../assets/sql/horse/update/initialize.sql" download>Download initialize.sql</a></p>
 
-    <details><summary><strong>Simulated Output</strong></summary>
+    <h4>main.sql</h4>
+    <pre id="update-main">Loading…</pre>
+    <p><a class="btn" href="../../assets/sql/horse/update/main.sql" download>Download main.sql</a></p>
+
+    <details open>
+      <summary><strong>Simulated Output – SELECT * FROM Horse</strong></summary>
       <table>
         <thead><tr><th>ID</th><th>RegisteredName</th><th>Breed</th><th>Height</th><th>BirthDate</th></tr></thead>
         <tbody>
@@ -168,20 +109,25 @@ SELECT * FROM Horse;</pre>
           <tr><td>5</td><td>Alexis</td><td>NULL</td><td>15.9</td><td>2018-02-01</td></tr>
         </tbody>
       </table>
+      <p class="note">Mirrors your 2.17 screenshot: height changed, rename + date, breeds set to NULL for births on/after 2016-12-22.</p>
     </details>
   </section>
 
   <!-- 2.18 DELETE -->
-  <section class="card lab">
+  <section class="card">
     <h3>2.18 – Delete rows from Horse table</h3>
-    <p class="note">Delete ID 5, delete breeds Holsteiner or Paint, delete any horse born before 2013-03-13.</p>
-<pre><code>DELETE FROM Horse WHERE ID = 5;
-DELETE FROM Horse WHERE Breed = 'Holsteiner' OR Breed = 'Paint';
-DELETE FROM Horse WHERE BirthDate < '2013-03-13';
+    <p class="note">Delete ID 5, delete Holsteiner/Paint, delete any horse born before 2013-03-13.</p>
 
-SELECT * FROM Horse;</code></pre>
+    <h4>initialize.sql</h4>
+    <pre id="delete-init">Loading…</pre>
+    <p><a class="btn" href="../../assets/sql/horse/delete/initialize.sql" download>Download initialize.sql</a></p>
 
-    <details><summary><strong>Simulated Output</strong></summary>
+    <h4>main.sql</h4>
+    <pre id="delete-main">Loading…</pre>
+    <p><a class="btn" href="../../assets/sql/horse/delete/main.sql" download>Download main.sql</a></p>
+
+    <details open>
+      <summary><strong>Simulated Output – Remaining Rows</strong></summary>
       <table>
         <thead><tr><th>ID</th><th>RegisteredName</th><th>Breed</th><th>Height</th><th>BirthDate</th></tr></thead>
         <tbody>
@@ -192,9 +138,60 @@ SELECT * FROM Horse;</code></pre>
     </details>
   </section>
 
+  <!-- 2.15 SELECT -->
+  <section class="card">
+    <h3>2.15 – Select horses with logical operators</h3>
+    <p class="note">Return RegisteredName, Height, BirthDate where <code>Height BETWEEN 15.0 AND 16.0</code> OR <code>BirthDate ≥ 2020-01-01</code>.</p>
+
+    <h4>initialize.sql</h4>
+    <pre id="select-init">Loading…</pre>
+    <p><a class="btn" href="../../assets/sql/horse/select/initialize.sql" download>Download initialize.sql</a></p>
+
+    <h4>main.sql</h4>
+    <pre id="select-main">Loading…</pre>
+    <p><a class="btn" href="../../assets/sql/horse/select/main.sql" download>Download main.sql</a></p>
+
+    <details open>
+      <summary><strong>Simulated Output – Expected Rows</strong></summary>
+      <table>
+        <thead><tr><th>RegisteredName</th><th>Height</th><th>BirthDate</th></tr></thead>
+        <tbody>
+          <tr><td>Babe</td><td>15.3</td><td>2015-02-10</td></tr>
+          <tr><td>Independence</td><td>16.0</td><td>2017-03-13</td></tr>
+          <tr><td>Ellie</td><td>15.0</td><td>2016-12-22</td></tr>
+          <tr><td>Alexis</td><td>15.9</td><td>2018-02-01</td></tr>
+          <tr><td>Lexie</td><td>16.2</td><td>2020-02-19</td></tr>
+        </tbody>
+      </table>
+      <p class="note">Matches your zyBooks 2.15 result (height range OR birth date ≥ 2020-01-01).</p>
+    </details>
+  </section>
 </main>
 
 <footer>© <span id="yr"></span> Dillan Lofton • SQL – Horse Database</footer>
-<script>document.getElementById('yr').textContent=new Date().getFullYear()</script>
+<script>
+  function loadSQL(preId, url){
+    const el = document.getElementById(preId);
+    fetch(url).then(r=>r.ok?r.text():Promise.reject()).then(t=>el.textContent=t)
+      .catch(()=>{ el.textContent = 'Could not load: ' + url });
+  }
+  // load each pair (uses your folder names)
+  loadSQL('create-init','../../assets/sql/horse/create/initialize.sql');
+  loadSQL('create-main','../../assets/sql/horse/create/main.sql');
+
+  loadSQL('insert-init','../../assets/sql/horse/insert/initialize.sql');
+  loadSQL('insert-main','../../assets/sql/horse/insert/main.sql');
+
+  loadSQL('update-init','../../assets/sql/horse/update/initialize.sql');
+  loadSQL('update-main','../../assets/sql/horse/update/main.sql');
+
+  loadSQL('delete-init','../../assets/sql/horse/delete/initialize.sql');
+  loadSQL('delete-main','../../assets/sql/horse/delete/main.sql');
+
+  loadSQL('select-init','../../assets/sql/horse/select/initialize.sql');
+  loadSQL('select-main','../../assets/sql/horse/select/main.sql');
+
+  document.getElementById('yr').textContent=new Date().getFullYear();
+</script>
 </body>
 </html>
