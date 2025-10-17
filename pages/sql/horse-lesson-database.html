@@ -3,248 +3,313 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Horse Lesson Scheduling Database | Dillan Lofton</title>
+<title>Horse Lesson Scheduling DB | Dillan Lofton</title>
 <style>
   :root{
-    --bg:#0f1720; --panel:#111827; --text:#e5e7eb; --muted:#9ca3af;
-    --brand:#ff9900; --border:#1f2937; --ring: rgba(255,153,0,.35);
-    --card:#0b1220; --card2:#0d1424;
-    --green:#34d399; --cyan:#60a5fa; --purp:#c084fc; --org:#f59e0b; --red:#fb7185;
+    --bg:#0f1720;--bg2:#0a1220;--text:#e5e7eb;--muted:#9ca3af;
+    --card:#0b1220;--card2:#0d1424;--border:#1f2937;--brand:#ff9900;--ring:rgba(255,153,0,.35)
   }
   *{box-sizing:border-box}
-  html,body{margin:0;background:linear-gradient(180deg,var(--bg),#0a1220);color:var(--text);
-            font-family:ui-sans-serif,system-ui,Segoe UI,Roboto,Inter,Arial;line-height:1.6}
+  body{margin:0;background:linear-gradient(180deg,var(--bg),var(--bg2));color:var(--text);
+       font-family:ui-sans-serif,system-ui,Segoe UI,Roboto,Inter,Arial;line-height:1.6}
   a{color:#ffb84d;text-decoration:none}
-  header{position:sticky;top:0;z-index:50;backdrop-filter:blur(8px);
-         background:rgba(17,24,39,.6);border-bottom:1px solid var(--border)}
+  header{position:sticky;top:0;z-index:40;background:rgba(17,24,39,.65);
+         backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
   .wrap{max-width:1100px;margin:auto;padding:1rem}
-  h1{margin:.2rem 0 .4rem;font-size:clamp(1.6rem,3.5vw,2.2rem)}
+  h1{margin:.2rem 0 .2rem}
   .note{color:var(--muted)}
   .grid{display:grid;grid-template-columns:1fr;gap:1rem;margin:1rem 0 2rem}
-  .card{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--border);border-radius:14px;
-        padding:1.1rem;box-shadow:0 10px 24px rgba(5,8,15,.35)}
-  .pill{display:inline-block;border:1px solid var(--border);border-radius:999px;padding:.22rem .55rem;margin:.1rem .25rem 0 0;color:#cfd8e3;font-size:.85rem}
-  .sect h2{margin:.2rem 0 .3rem;font-size:1.2rem}
-  .cols{display:grid;gap:1rem}
-  @media(min-width:900px){.cols{grid-template-columns:1.1fr .9fr}}
-
-  /* terminal-style output */
-  .term{background:#0a0f1a;border:1px solid #0f1a2b;border-radius:10px;padding:.9rem;font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;overflow:auto}
-  /* SQL code theme */
-  pre.code{background:#0a0f1a;border:1px solid #0f1a2b;border-radius:10px;padding:.9rem;overflow:auto}
-  code.sql{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;font-size:.95rem;white-space:pre}
-  /* lightweight syntax colors */
-  .kw{color:var(--org)} .id{color:var(--cyan)} .fn{color:var(--purp)}
-  .str{color:var(--green)} .num{color:#fbbf24} .com{color:#6b7280}
-  .op{color:#93c5fd}
-  footer{border-top:1px solid var(--border);color:#9ca3af;text-align:center;padding:1.2rem}
+  .card{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--border);
+        border-radius:14px;padding:1rem 1rem 1.1rem;box-shadow:0 10px 24px rgba(0,0,0,.25)}
+  .card h2{margin:.2rem 0 .2rem;font-size:1.1rem}
+  .tabs{display:flex;gap:.4rem;margin:.6rem 0 .5rem}
+  .tab{appearance:none;border:1px solid var(--border);background:#0b1020;color:#cbd5e1;
+       padding:.35rem .6rem;border-radius:8px;cursor:pointer}
+  .tab[aria-selected="true"]{background:linear-gradient(180deg,var(--brand),#f59e0b);color:#111;font-weight:700}
+  .pane{display:none}
+  .pane.active{display:block}
+  pre{margin:.4rem 0 .8rem;border:1px solid var(--border);border-radius:12px;padding:.8rem;overflow:auto}
+  /* terminal look for outputs */
+  .term{background:#0a0f17}
+  .term .prompt{color:#9ca3af}
+  /* SQL syntax colors */
+  .code{background:#0b0f1a}
+  code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.92rem}
+  .sql .kw{color:#7dd3fc}         /* keywords */
+  .sql .fn{color:#fde68a}         /* functions */
+  .sql .id{color:#a7f3d0}         /* identifiers */
+  .sql .num{color:#fca5a5}        /* numbers */
+  .sql .str{color:#f9a8d4}        /* strings */
+  .sql .com{color:#94a3b8}        /* comments */
+  footer{border-top:1px solid var(--border);color:var(--muted);text-align:center;padding:1.2rem}
+  @media(min-width:860px){.grid{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
 <header><div class="wrap"><a href="../index.html">← Back to SQL Projects</a></div></header>
-
 <main class="wrap">
   <h1>🐴 Horse Lesson Scheduling Database</h1>
-  <p class="note">Schema + CRUD labs and joins combining Horse, Student and LessonSchedule. All SQL and outputs are shown with a consistent theme.</p>
+  <p class="note">Complete mini-project covering schema design, constraints/foreign keys, and query patterns (joins, groups, subqueries). Click the tabs to switch between <em>Schema/Setup</em> and your <em>Main Query</em>. Outputs simulate the console results from zyBooks.</p>
 
-  <!-- SCHEMA / CONSTRAINTS ------------------------------------------------- -->
-  <section class="card sect">
-    <h2>2.19 — Create <code>Horse</code> table (with constraints)</h2>
-    <div class="pill">DDL</div><div class="pill">Constraints</div><div class="pill">MySQL</div>
-    <div class="cols" style="margin-top:.6rem">
-      <pre class="code"><code class="sql">
-<span class="com">-- Drop and create Horse table with constraints</span>
-<span class="kw">DROP</span> <span class="kw">TABLE</span> <span class="kw">IF</span> <span class="kw">EXISTS</span> <span class="id">Horse</span>;
-<span class="kw">CREATE TABLE</span> <span class="id">Horse</span> (
-  <span class="id">ID</span> <span class="kw">SMALLINT</span> <span class="kw">UNSIGNED</span> <span class="kw">NOT NULL</span> <span class="kw">AUTO_INCREMENT</span>,
-  <span class="id">RegisteredName</span> <span class="kw">VARCHAR</span>(<span class="num">15</span>) <span class="kw">NOT NULL</span>,
-  <span class="id">Breed</span> <span class="kw">VARCHAR</span>(<span class="num">20</span>) <span class="kw">CHECK</span> (<span class="id">Breed</span> <span class="kw">IN</span> (<span class="str">'Egyptian Arab'</span>, <span class="str">'Holsteiner'</span>, <span class="str">'Quarter Horse'</span>, <span class="str">'Paint'</span>, <span class="str">'Saddlebred'</span>)),
-  <span class="id">Height</span> <span class="kw">DECIMAL</span>(<span class="num">3</span>,<span class="num">1</span>) <span class="kw">CHECK</span> (<span class="id">Height</span> <span class="kw">BETWEEN</span> <span class="num">10.0</span> <span class="kw">AND</span> <span class="num">20.0</span>),
-  <span class="id">BirthDate</span> <span class="kw">DATE</span> <span class="kw">CHECK</span> (<span class="id">BirthDate</span> <span class="op">&gt;=</span> <span class="str">'2015-01-01'</span>),
-  <span class="kw">PRIMARY KEY</span> (<span class="id">ID</span>)
-);</code></pre>
+  <section class="grid">
 
-      <!-- output: SHOW COLUMNS FROM Horse; -->
-      <div>
-        <p class="note" style="margin:.2rem 0 .4rem">Output (SHOW COLUMNS FROM Horse):</p>
-        <pre class="term">+---------------+-------------------+------+-----+---------+-------------+
-| Field         | Type              | Null | Key | Default | Extra       |
-+---------------+-------------------+------+-----+---------+-------------+
-| ID            | smallint unsigned | NO   | PRI | NULL    | auto_increment |
-| RegisteredName| varchar(15)       | NO   |     | NULL    |             |
-| Breed         | varchar(20)       | YES  |     | NULL    |             |
-| Height        | decimal(3,1)      | YES  |     | NULL    |             |
-| BirthDate     | date              | YES  |     | NULL    |             |
-+---------------+-------------------+------+-----+---------+-------------+</pre>
+    <!-- 2.19 CREATE HORSE (constraints) -->
+    <article class="card" id="lab-219">
+      <h2>2.19 — Create <code>Horse</code> table with constraints</h2>
+      <div class="tabs">
+        <button class="tab" role="tab" aria-controls="p219a" aria-selected="true">Schema / Setup</button>
+        <button class="tab" role="tab" aria-controls="p219b" aria-selected="false">Main Query / Solution</button>
       </div>
-    </div>
-  </section>
+      <div class="pane active code sql" id="p219a">
+<pre><code class="sql"><span class="com">-- Initialize database</span>
+<span class="kw">DROP</span> <span class="kw">TABLE IF EXISTS</span> <span class="id">Horse</span>;
+<span class="kw">CREATE TABLE</span> <span class="id">Horse</span> (
+  <span class="id">ID</span> <span class="kw">SMALLINT</span> <span class="kw">UNSIGNED</span> <span class="kw">AUTO_INCREMENT</span> <span class="kw">PRIMARY KEY</span>,
+  <span class="id">RegisteredName</span> <span class="kw">VARCHAR</span>(<span class="num">15</span>) <span class="kw">NOT NULL</span>,
+  <span class="id">Breed</span> <span class="kw">VARCHAR</span>(<span class="num">20</span>),
+  <span class="id">Height</span> <span class="kw">DECIMAL</span>(<span class="num">3</span>,<span class="num">1</span>),
+  <span class="id">BirthDate</span> <span class="kw">DATE</span>
+);
+<span class="kw">SHOW COLUMNS FROM</span> <span class="id">Horse</span>;
+</code></pre>
+      </div>
+      <div class="pane code sql" id="p219b">
+<pre><code class="sql"><span class="com">-- No separate main.sql for this lab; schema verification:</span>
+<span class="kw">SHOW COLUMNS FROM</span> <span class="id">Horse</span>;
+</code></pre>
+      </div>
+      <pre class="term"><code>
++--------------+--------------------+------+-----+---------+----------------+
+| Field        | Type               | Null | Key | Default | Extra          |
++--------------+--------------------+------+-----+---------+----------------+
+| ID           | smallint unsigned  | NO   | PRI | NULL    | auto_increment |
+| RegisteredName | varchar(15)      | NO   |     | NULL    |                |
+| Breed        | varchar(20)        | YES  |     | NULL    |                |
+| Height       | decimal(3,1)       | YES  |     | NULL    |                |
+| BirthDate    | date               | YES  |     | NULL    |                |
++--------------+--------------------+------+-----+---------+----------------+
+</code></pre>
+    </article>
 
-  <section class="card sect">
-    <h2>2.20 — Create <code>Student</code> table (with constraints)</h2>
-    <div class="pill">DDL</div><div class="pill">Constraints</div>
-    <div class="cols" style="margin-top:.6rem">
-      <pre class="code"><code class="sql">
-<span class="kw">CREATE TABLE</span> <span class="id">Student</span> (
+    <!-- 2.20 CREATE STUDENT -->
+    <article class="card" id="lab-220">
+      <h2>2.20 — Create <code>Student</code> table with constraints</h2>
+      <div class="tabs">
+        <button class="tab" role="tab" aria-controls="p220a" aria-selected="true">Schema / Setup</button>
+        <button class="tab" role="tab" aria-controls="p220b" aria-selected="false">Main Query / Solution</button>
+      </div>
+      <div class="pane active code sql" id="p220a">
+<pre><code class="sql"><span class="kw">CREATE TABLE</span> <span class="id">Student</span> (
   <span class="id">ID</span> <span class="kw">SMALLINT</span> <span class="kw">UNSIGNED</span> <span class="kw">AUTO_INCREMENT</span> <span class="kw">PRIMARY KEY</span>,
   <span class="id">FirstName</span> <span class="kw">VARCHAR</span>(<span class="num">20</span>) <span class="kw">NOT NULL</span>,
-  <span class="id">LastName</span>  <span class="kw">VARCHAR</span>(<span class="num">30</span>) <span class="kw">NOT NULL</span>,
-  <span class="id">Street</span>     <span class="kw">VARCHAR</span>(<span class="num">50</span>) <span class="kw">NOT NULL</span>,
-  <span class="id">City</span>       <span class="kw">VARCHAR</span>(<span class="num">20</span>) <span class="kw">NOT NULL</span>,
-  <span class="id">State</span>      <span class="kw">CHAR</span>(<span class="num">2</span>) <span class="kw">NOT NULL</span> <span class="kw">DEFAULT</span> <span class="str">'TX'</span>,
-  <span class="id">Zip</span>        <span class="kw">MEDIUMINT</span> <span class="kw">UNSIGNED</span> <span class="kw">NOT NULL</span>,
-  <span class="id">Phone</span>      <span class="kw">CHAR</span>(<span class="num">10</span>) <span class="kw">NOT NULL</span>,
-  <span class="id">Email</span>      <span class="kw">VARCHAR</span>(<span class="num">30</span>) <span class="kw">UNIQUE</span>
-);</code></pre>
-
-      <div>
-        <p class="note" style="margin:.2rem 0 .4rem">Output (SHOW COLUMNS FROM Student):</p>
-        <pre class="term">+-----------+--------------------+------+-----+---------+---------------+
-| Field     | Type               | Null | Key | Default | Extra         |
-+-----------+--------------------+------+-----+---------+---------------+
-| ID        | smallint unsigned  | NO   | PRI | NULL    | auto_increment|
-| FirstName | varchar(20)        | NO   |     | NULL    |               |
-| LastName  | varchar(30)        | NO   |     | NULL    |               |
-| Street    | varchar(50)        | NO   |     | NULL    |               |
-| City      | varchar(20)        | NO   |     | NULL    |               |
-| State     | char(2)            | NO   |     | TX      |               |
-| Zip       | mediumint unsigned | NO   |     | NULL    |               |
-| Phone     | char(10)           | NO   |     | NULL    |               |
-| Email     | varchar(30)        | YES  | UNI | NULL    |               |
-+-----------+--------------------+------+-----+---------+---------------+</pre>
+  <span class="id">LastName</span> <span class="kw">VARCHAR</span>(<span class="num">30</span>) <span class="kw">NOT NULL</span>,
+  <span class="id">Street</span> <span class="kw">VARCHAR</span>(<span class="num">50</span>) <span class="kw">NOT NULL</span>,
+  <span class="id">City</span> <span class="kw">VARCHAR</span>(<span class="num">20</span>) <span class="kw">NOT NULL</span>,
+  <span class="id">State</span> <span class="kw">CHAR</span>(<span class="num">2</span>) <span class="kw">NOT NULL</span> <span class="kw">DEFAULT</span> <span class="str">'TX'</span>,
+  <span class="id">Zip</span> <span class="kw">MEDIUMINT</span> <span class="kw">UNSIGNED</span> <span class="kw">NOT NULL</span>,
+  <span class="id">Phone</span> <span class="kw">CHAR</span>(<span class="num">10</span>) <span class="kw">NOT NULL</span>,
+  <span class="id">Email</span> <span class="kw">VARCHAR</span>(<span class="num">30</span>) <span class="kw">UNIQUE</span>
+);
+<span class="kw">SHOW COLUMNS FROM</span> <span class="id">Student</span>;
+</code></pre>
       </div>
-    </div>
-  </section>
+      <div class="pane code sql" id="p220b">
+<pre><code class="sql"><span class="com">-- Schema verification only</span>
+<span class="kw">SHOW COLUMNS FROM</span> <span class="id">Student</span>;
+</code></pre>
+      </div>
+      <pre class="term"><code>
++----------+--------------------+------+-----+---------+----------------+
+| Field    | Type               | Null | Key | Default | Extra          |
++----------+--------------------+------+-----+---------+----------------+
+| ID       | smallint unsigned  | NO   | PRI | NULL    | auto_increment |
+| FirstName| varchar(20)        | NO   |     | NULL    |                |
+| LastName | varchar(30)        | NO   |     | NULL    |                |
+| Street   | varchar(50)        | NO   |     | NULL    |                |
+| City     | varchar(20)        | NO   |     | NULL    |                |
+| State    | char(2)            | NO   |     | TX      |                |
+| Zip      | mediumint unsigned | NO   |     | NULL    |                |
+| Phone    | char(10)           | NO   |     | NULL    |                |
+| Email    | varchar(30)        | YES  | UNI | NULL    |                |
++----------+--------------------+------+-----+---------+----------------+
+</code></pre>
+    </article>
 
-  <section class="card sect">
-    <h2>2.21 — Create <code>LessonSchedule</code> with foreign keys</h2>
-    <div class="pill">DDL</div><div class="pill">Foreign Keys</div><div class="pill">Composite PK</div>
-    <div class="cols" style="margin-top:.6rem">
-      <pre class="code"><code class="sql">
-<span class="kw">CREATE TABLE</span> <span class="id">LessonSchedule</span> (
+    <!-- 2.21 CREATE LESSONS with FKs -->
+    <article class="card" id="lab-221">
+      <h2>2.21 — Create <code>LessonSchedule</code> (FK constraints)</h2>
+      <div class="tabs">
+        <button class="tab" role="tab" aria-controls="p221a" aria-selected="true">Schema / Setup</button>
+        <button class="tab" role="tab" aria-controls="p221b" aria-selected="false">Main Query / Solution</button>
+      </div>
+      <div class="pane active code sql" id="p221a">
+<pre><code class="sql"><span class="kw">CREATE TABLE</span> <span class="id">LessonSchedule</span> (
   <span class="id">HorseID</span> <span class="kw">SMALLINT</span> <span class="kw">UNSIGNED</span> <span class="kw">NOT NULL</span>,
-  <span class="id">StudentID</span> <span class="kw">SMALLINT</span> <span class="kw">UNSIGNED</span> <span class="kw">NULL</span>,
+  <span class="id">StudentID</span> <span class="kw">SMALLINT</span> <span class="kw">UNSIGNED</span>,
   <span class="id">LessonDateTime</span> <span class="kw">DATETIME</span> <span class="kw">NOT NULL</span>,
   <span class="kw">PRIMARY KEY</span> (<span class="id">HorseID</span>, <span class="id">LessonDateTime</span>),
   <span class="kw">FOREIGN KEY</span> (<span class="id">HorseID</span>) <span class="kw">REFERENCES</span> <span class="id">Horse</span>(<span class="id">ID</span>) <span class="kw">ON DELETE CASCADE</span>,
   <span class="kw">FOREIGN KEY</span> (<span class="id">StudentID</span>) <span class="kw">REFERENCES</span> <span class="id">Student</span>(<span class="id">ID</span>) <span class="kw">ON DELETE SET NULL</span>
-);</code></pre>
-
-      <!-- simulated output style to match 2.19/2.20 -->
-      <div>
-        <p class="note" style="margin:.2rem 0 .4rem">Output (SHOW COLUMNS FROM LessonSchedule):</p>
-        <pre class="term">+---------------+-------------------+------+-----+---------+------+
-| Field         | Type              | Null | Key | Default | Extra|
-+---------------+-------------------+------+-----+---------+------+
-| HorseID       | smallint unsigned | NO   | PRI | NULL    |      |
-| StudentID     | smallint unsigned | YES  |     | NULL    |      |
-| LessonDateTime| datetime          | NO   | PRI | NULL    |      |
-+---------------+-------------------+------+-----+---------+------+</pre>
+);
+<span class="kw">SHOW COLUMNS FROM</span> <span class="id">LessonSchedule</span>;
+</code></pre>
       </div>
-    </div>
-  </section>
+      <div class="pane code sql" id="p221b">
+<pre><code class="sql"><span class="com">-- Schema verification only</span>
+<span class="kw">SHOW COLUMNS FROM</span> <span class="id">LessonSchedule</span>;
+</code></pre>
+      </div>
+      <pre class="term"><code>
++---------------+-----------+------+-----+---------+-------+
+| Field         | Type      | Null | Key | Default | Extra |
++---------------+-----------+------+-----+---------+-------+
+| HorseID       | smallint  | NO   | PRI | NULL    |       |
+| StudentID     | smallint  | YES  |     | NULL    |       |
+| LessonDateTime| datetime  | NO   | PRI | NULL    |       |
++---------------+-----------+------+-----+---------+-------+
+</code></pre>
+    </article>
 
-  <!-- CRUD / QUERIES ------------------------------------------------------- -->
-  <section class="card sect">
-    <h2>2.15 — Select horses with logical operators</h2>
-    <div class="pill">SELECT</div>
-    <div class="cols" style="margin-top:.6rem">
-      <pre class="code"><code class="sql">
-<span class="com">-- Initialize</span>
-<span class="kw">SOURCE</span> <span class="id">Initialize.sql</span>;
-<span class="kw">SELECT</span> <span class="id">RegisteredName</span>, <span class="id">Height</span>, <span class="id">BirthDate</span>
+    <!-- 2.15 SELECT with logical operators -->
+    <article class="card" id="lab-215">
+      <h2>2.15 — Select horses with logical operators</h2>
+      <div class="tabs">
+        <button class="tab" role="tab" aria-controls="p215a" aria-selected="true">Schema / Setup</button>
+        <button class="tab" role="tab" aria-controls="p215b" aria-selected="false">Main Query / Solution</button>
+      </div>
+      <div class="pane active code sql" id="p215a">
+<pre><code class="sql"><span class="com">-- source Initialize.sql (table created + data seeded in zyBooks)</span>
+</code></pre>
+      </div>
+      <div class="pane code sql" id="p215b">
+<pre><code class="sql"><span class="kw">SELECT</span> <span class="id">RegisteredName</span>, <span class="id">Height</span>, <span class="id">BirthDate</span>
 <span class="kw">FROM</span> <span class="id">Horse</span>
 <span class="kw">WHERE</span> <span class="id">Height</span> <span class="kw">BETWEEN</span> <span class="num">15</span> <span class="kw">AND</span> <span class="num">16</span>
-   <span class="kw">OR</span> <span class="id">BirthDate</span> <span class="op">&gt;=</span> <span class="str">'2020-01-01'</span>;</code></pre>
+   <span class="kw">OR</span> <span class="id">BirthDate</span> <span class="kw">&gt;=</span> <span class="str">'2020-01-01'</span>;
+</code></pre>
+      </div>
+      <pre class="term"><code>
++----------------+-------+------------+
+| RegisteredName | Height| BirthDate  |
++----------------+-------+------------+
+| Babe           | 15.3  | 2015-02-10 |
+| Independence   | 16.0  | 2011-03-13 |
+| Ellie          | 15.0  | 2016-12-22 |
+| Alexis         | 15.9  | 2018-02-01 |
+| Lexie          | 16.2  | 2020-02-19 |
++----------------+-------+------------+
+</code></pre>
+    </article>
 
-      <pre class="term">+----------------+--------+------------+
-| RegisteredName | Height | BirthDate  |
-+----------------+--------+------------+
-| Babe           | 15.3   | 2015-02-10 |
-| Independence   | 16.0   | 2011-03-13 |
-| Ellie          | 15.0   | 2016-12-22 |
-| Alexis         | 15.9   | 2018-02-01 |
-| Lexie          | 16.2   | 2020-02-19 |
-+----------------+--------+------------+</pre>
-    </div>
-  </section>
+    <!-- 2.16 INSERT -->
+    <article class="card" id="lab-216">
+      <h2>2.16 — Insert rows into <code>Horse</code></h2>
+      <div class="tabs">
+        <button class="tab" role="tab" aria-controls="p216a" aria-selected="true">Schema / Setup</button>
+        <button class="tab" role="tab" aria-controls="p216b" aria-selected="false">Main Query / Solution</button>
+      </div>
+      <div class="pane active code sql" id="p216a">
+<pre><code class="sql"><span class="com">-- CREATE TABLE Horse (...) then run inserts in main.sql</span></code></pre>
+      </div>
+      <div class="pane code sql" id="p216b">
+<pre><code class="sql"><span class="kw">INSERT INTO</span> <span class="id">Horse</span>(<span class="id">RegisteredName</span>,<span class="id">Breed</span>,<span class="id">Height</span>,<span class="id">BirthDate</span>) <span class="kw">VALUES</span>
+(<span class="str">'Babe'</span>,<span class="str">'Quarter Horse'</span>,<span class="num">15.3</span>,<span class="str">'2015-02-10'</span>),
+(<span class="str">'Independence'</span>,<span class="str">'Holsteiner'</span>,<span class="num">16.0</span>,<span class="str">'2017-03-13'</span>),
+(<span class="str">'Ellie'</span>,<span class="str">'Saddlebred'</span>,<span class="num">15.0</span>,<span class="str">'2016-12-22'</span>),
+(<span class="kw">NULL</span>,<span class="str">'Egyptian Arab'</span>,<span class="num">14.9</span>,<span class="str">'2019-10-12'</span>);
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="id">Horse</span>;
+</code></pre>
+      </div>
+      <pre class="term"><code>
++----+----------------+--------------+--------+------------+
+| ID | RegisteredName | Breed        | Height | BirthDate  |
++----+----------------+--------------+--------+------------+
+| 1  | Babe           | Quarter Horse| 15.3   | 2015-02-10 |
+| 2  | Independence   | Holsteiner   | 16.0   | 2017-03-13 |
+| 3  | Ellie          | Saddlebred   | 15.0   | 2016-12-22 |
+| 4  | NULL           | Egyptian Arab| 14.9   | 2019-10-12 |
++----+----------------+--------------+--------+------------+
+</code></pre>
+    </article>
 
-  <section class="card sect">
-    <h2>2.16 — Insert rows into Horse</h2>
-    <div class="pill">INSERT</div>
-    <div class="cols" style="margin-top:.6rem">
-      <pre class="code"><code class="sql">
-<span class="kw">INSERT INTO</span> <span class="id">Horse</span>(<span class="id">RegisteredName</span>,<span class="id">Breed</span>,<span class="id">Height</span>,<span class="id">BirthDate</span>) <span class="kw">VALUES</span>
-(<span class="str">'Babe'</span>, <span class="str">'Quarter Horse'</span>, <span class="num">15.3</span>, <span class="str">'2015-02-10'</span>),
-(<span class="str">'Independence'</span>, <span class="str">'Holsteiner'</span>, <span class="num">16.0</span>, <span class="str">'2017-03-13'</span>),
-(<span class="str">'Ellie'</span>, <span class="str">'Saddlebred'</span>, <span class="num">15.0</span>, <span class="str">'2016-12-22'</span>),
-(<span class="kw">NULL</span>, <span class="str">'Egyptian Arab'</span>, <span class="num">14.9</span>, <span class="str">'2019-10-12'</span>);
-<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="id">Horse</span>;</code></pre>
+    <!-- 2.17 UPDATE -->
+    <article class="card" id="lab-217">
+      <h2>2.17 — Update rows in <code>Horse</code></h2>
+      <div class="tabs">
+        <button class="tab" role="tab" aria-controls="p217a" aria-selected="true">Schema / Setup</button>
+        <button class="tab" role="tab" aria-controls="p217b" aria-selected="false">Main Query / Solution</button>
+      </div>
+      <div class="pane active code sql" id="p217a">
+<pre><code class="sql"><span class="com">-- source Initialize.sql (seed data), then run updates:</span></code></pre>
+      </div>
+      <div class="pane code sql" id="p217b">
+<pre><code class="sql"><span class="kw">UPDATE</span> <span class="id">Horse</span> <span class="kw">SET</span> <span class="id">Height</span>=<span class="str">'15.6'</span> <span class="kw">WHERE</span> <span class="id">ID</span>=<span class="num">2</span>;
+<span class="kw">UPDATE</span> <span class="id">Horse</span> <span class="kw">SET</span> <span class="id">RegisteredName</span>=<span class="str">'Lady Luck'</span>, <span class="id">BirthDate</span>=<span class="str">'2015-05-01'</span> <span class="kw">WHERE</span> <span class="id">ID</span>=<span class="num">4</span>;
+<span class="kw">UPDATE</span> <span class="id">Horse</span> <span class="kw">SET</span> <span class="id">Breed</span>=<span class="kw">NULL</span> <span class="kw">WHERE</span> <span class="id">BirthDate</span> <span class="kw">&gt;=</span> <span class="str">'2016-12-22'</span>;
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="id">Horse</span>;
+</code></pre>
+      </div>
+      <pre class="term"><code>
++----+---------------+--------------+--------+------------+
+| ID | RegisteredName| Breed        | Height | BirthDate  |
++----+---------------+--------------+--------+------------+
+| 1  | Babe          | Quarter Horse| 15.3   | 2015-02-10 |
+| 2  | Independence  | Holsteiner   | 15.6   | 2015-03-13 |
+| 3  | Ellie         | NULL         | 15.0   | 2016-12-22 |
+| 4  | Lady Luck     | Paint        | 16.1   | 2015-05-01 |
+| 5  | Alexis        | NULL         | 15.9   | 2018-02-01 |
++----+---------------+--------------+--------+------------+
+</code></pre>
+    </article>
 
-      <pre class="term">+----+----------------+---------------+--------+------------+
-| ID | RegisteredName | Breed         | Height | BirthDate  |
-+----+----------------+---------------+--------+------------+
-| 1  | Babe           | Quarter Horse | 15.3   | 2015-02-10 |
-| 2  | Independence   | Holsteiner    | 16.0   | 2017-03-13 |
-| 3  | Ellie          | Saddlebred    | 15.0   | 2016-12-22 |
-| 4  | NULL           | Egyptian Arab | 14.9   | 2019-10-12 |
-+----+----------------+---------------+--------+------------+</pre>
-    </div>
-  </section>
+    <!-- 2.18 DELETE -->
+    <article class="card" id="lab-218">
+      <h2>2.18 — Delete rows from <code>Horse</code></h2>
+      <div class="tabs">
+        <button class="tab" role="tab" aria-controls="p218a" aria-selected="true">Schema / Setup</button>
+        <button class="tab" role="tab" aria-controls="p218b" aria-selected="false">Main Query / Solution</button>
+      </div>
+      <div class="pane active code sql" id="p218a">
+<pre><code class="sql"><span class="com">-- start from initialized/updated data then apply deletes:</span></code></pre>
+      </div>
+      <div class="pane code sql" id="p218b">
+<pre><code class="sql"><span class="kw">DELETE FROM</span> <span class="id">Horse</span> <span class="kw">WHERE</span> <span class="id">ID</span>=<span class="num">5</span>;
+<span class="kw">DELETE FROM</span> <span class="id">Horse</span> <span class="kw">WHERE</span> <span class="id">Breed</span>=<span class="str">'Holsteiner'</span> <span class="kw">OR</span> <span class="id">Breed</span>=<span class="str">'Paint'</span>;
+<span class="kw">DELETE FROM</span> <span class="id">Horse</span> <span class="kw">WHERE</span> <span class="id">BirthDate</span> <span class="kw">&lt;</span> <span class="str">'2013-03-13'</span>;
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="id">Horse</span>;
+</code></pre>
+      </div>
+      <pre class="term"><code>
++----+----------------+--------------+--------+------------+
+| ID | RegisteredName | Breed        | Height | BirthDate  |
++----+----------------+--------------+--------+------------+
+| 1  | Babe           | Quarter Horse| 15.3   | 2015-02-10 |
+| 3  | Ellie          | Saddlebred   | 15.0   | 2016-12-22 |
++----+----------------+--------------+--------+------------+
+</code></pre>
+    </article>
 
-  <section class="card sect">
-    <h2>2.17 — Update rows in Horse</h2>
-    <div class="pill">UPDATE</div>
-    <div class="cols" style="margin-top:.6rem">
-      <pre class="code"><code class="sql">
-<span class="kw">UPDATE</span> <span class="id">Horse</span> <span class="kw">SET</span> <span class="id">Height</span><span class="op">=</span><span class="num">15.6</span> <span class="kw">WHERE</span> <span class="id">ID</span><span class="op">=</span><span class="num">2</span>;
-<span class="kw">UPDATE</span> <span class="id">Horse</span> <span class="kw">SET</span> <span class="id">RegisteredName</span><span class="op">=</span><span class="str">'Lady Luck'</span>, <span class="id">BirthDate</span><span class="op">=</span><span class="str">'2015-05-01'</span> <span class="kw">WHERE</span> <span class="id">ID</span><span class="op">=</span><span class="num">4</span>;
-<span class="kw">UPDATE</span> <span class="id">Horse</span> <span class="kw">SET</span> <span class="id">Breed</span><span class="op">=</span><span class="kw">NULL</span> <span class="kw">WHERE</span> <span class="id">BirthDate</span> <span class="op">&gt;=</span> <span class="str">'2016-12-22'</span>;
-<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="id">Horse</span>;</code></pre>
-
-      <pre class="term">+----+---------------+---------------+--------+------------+
-| ID | RegisteredName| Breed         | Height | BirthDate  |
-+----+---------------+---------------+--------+------------+
-| 1  | Babe          | Quarter Horse | 15.3   | 2015-02-10 |
-| 2  | Independence  | Holsteiner    | 15.6   | 2015-03-13 |
-| 3  | Ellie         | NULL          | 15.0   | 2016-12-22 |
-| 4  | Lady Luck     | Paint         | 16.1   | 2015-05-01 |
-| 5  | Alexis        | NULL          | 15.9   | 2018-02-01 |
-+----+---------------+---------------+--------+------------+</pre>
-    </div>
-  </section>
-
-  <section class="card sect">
-    <h2>2.18 — Delete rows from Horse</h2>
-    <div class="pill">DELETE</div>
-    <div class="cols" style="margin-top:.6rem">
-      <pre class="code"><code class="sql">
-<span class="kw">DELETE FROM</span> <span class="id">Horse</span> <span class="kw">WHERE</span> <span class="id">ID</span><span class="op">=</span><span class="num">5</span>;
-<span class="kw">DELETE FROM</span> <span class="id">Horse</span> <span class="kw">WHERE</span> <span class="id">Breed</span><span class="op">=</span><span class="str">'Holsteiner'</span> <span class="kw">OR</span> <span class="id">Breed</span><span class="op">=</span><span class="str">'Paint'</span>;
-<span class="kw">DELETE FROM</span> <span class="id">Horse</span> <span class="kw">WHERE</span> <span class="id">BirthDate</span> <span class="op">&lt;</span> <span class="str">'2013-03-13'</span>;
-<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="id">Horse</span>;</code></pre>
-
-      <pre class="term">+----+----------------+---------------+--------+------------+
-| ID | RegisteredName | Breed         | Height | BirthDate  |
-+----+----------------+---------------+--------+------------+
-| 1  | Babe           | Quarter Horse | 15.3   | 2015-02-10 |
-| 3  | Ellie          | Saddlebred    | 15.0   | 2016-12-22 |
-+----+----------------+---------------+--------+------------+</pre>
-    </div>
-  </section>
-
-  <!-- COMPLEX QUERIES ------------------------------------------------------ -->
-  <section class="card sect">
-    <h2>3.12 — Self Join (Employee ↔ Manager)</h2>
-    <div class="pill">SELF JOIN</div>
-    <div class="cols" style="margin-top:.6rem">
-      <pre class="code"><code class="sql">
-<span class="kw">SELECT</span> e.<span class="id">FirstName</span> <span class="kw">AS</span> <span class="id">Employee</span>, m.<span class="id">FirstName</span> <span class="kw">AS</span> <span class="id">Manager</span>
+    <!-- 3.12 SELF JOIN Employees -->
+    <article class="card" id="lab-312">
+      <h2>3.12 — Self-join: Employees & Managers</h2>
+      <div class="tabs">
+        <button class="tab" role="tab" aria-controls="p312a" aria-selected="true">Schema / Setup</button>
+        <button class="tab" role="tab" aria-controls="p312b" aria-selected="false">Main Query / Solution</button>
+      </div>
+      <div class="pane active code sql" id="p312a">
+<pre><code class="sql"><span class="kw">-- Employee(ID, FirstName, LastName, ManagerID)</span></code></pre>
+      </div>
+      <div class="pane code sql" id="p312b">
+<pre><code class="sql"><span class="kw">SELECT</span> e.<span class="id">FirstName</span> <span class="kw">AS</span> <span class="id">Employee</span>,
+       m.<span class="id">FirstName</span> <span class="kw">AS</span> <span class="id">Manager</span>
 <span class="kw">FROM</span> <span class="id">Employee</span> e
-<span class="kw">INNER JOIN</span> <span class="id">Employee</span> m <span class="kw">ON</span> e.<span class="id">ManagerID</span> <span class="op">=</span> m.<span class="id">ID</span>
-<span class="kw">ORDER BY</span> e.<span class="id">FirstName</span>;</code></pre>
-
-      <pre class="term">+----------+---------+
+<span class="kw">INNER JOIN</span> <span class="id">Employee</span> m
+        <span class="kw">ON</span> e.<span class="id">ManagerID</span> = m.<span class="id">ID</span>
+<span class="kw">ORDER BY</span> e.<span class="id">FirstName</span>;
+</code></pre>
+      </div>
+      <pre class="term"><code>
++----------+---------+
 | Employee | Manager |
 +----------+---------+
 | Andy     | Jim     |
@@ -258,41 +323,136 @@
 | Phyllis  | Andy    |
 | Ryan     | David   |
 | Stanley  | Andy    |
-+----------+---------+</pre>
-    </div>
++----------+---------+
+</code></pre>
+    </article>
+
+    <!-- 3.13 INNER JOIN Assigned lessons -->
+    <article class="card" id="lab-313">
+      <h2>3.13 — Inner join: Assigned lessons (datetime, horse, student)</h2>
+      <div class="tabs">
+        <button class="tab" role="tab" aria-controls="p313a" aria-selected="true">Schema / Setup</button>
+        <button class="tab" role="tab" aria-controls="p313b" aria-selected="false">Main Query / Solution</button>
+      </div>
+      <div class="pane active code sql" id="p313a">
+<pre><code class="sql"><span class="kw">-- Student(ID, FirstName, LastName), LessonSchedule(HorseID, StudentID, LessonDateTime)</span></code></pre>
+      </div>
+      <div class="pane code sql" id="p313b">
+<pre><code class="sql"><span class="kw">SELECT</span> l.<span class="id">LessonDateTime</span>, l.<span class="id">HorseID</span>,
+       s.<span class="id">FirstName</span>, s.<span class="id">LastName</span>
+<span class="kw">FROM</span> <span class="id">LessonSchedule</span> l
+<span class="kw">INNER JOIN</span> <span class="id">Student</span> s
+        <span class="kw">ON</span> l.<span class="id">StudentID</span> = s.<span class="id">ID</span>
+<span class="kw">ORDER BY</span> l.<span class="id">LessonDateTime</span>, l.<span class="id">HorseID</span>;
+</code></pre>
+      </div>
+      <pre class="term"><code>
++---------------------+--------+-----------+----------+
+| LessonDateTime      | HorseID| FirstName | LastName |
++---------------------+--------+-----------+----------+
+| 2019-02-01 10:00:00 | 2      | Chales    | Dixon    |
+| 2019-02-01 11:30:00 | 4      | Amir      | Saliba   |
+| 2019-02-03 13:30:00 | 4      | Amir      | Saliba   |
+| 2020-02-01 08:30:00 | 1      | Maria     | Gonzalez |
+| 2020-02-01 08:30:00 | 4      | Wei       | Zhang    |
+| 2020-02-01 09:00:00 | 4      | Wei       | Zhang    |
+| 2020-02-01 09:30:00 | 1      | Chales    | Dixon    |
+| 2020-02-01 09:30:00 | 2      | Amir      | Saliba   |
+| 2020-02-01 10:00:00 | 1      | Karin     | White    |
++---------------------+--------+-----------+----------+
+</code></pre>
+    </article>
+
+    <!-- 3.14 MULTI JOIN include unassigned -->
+    <article class="card" id="lab-314">
+      <h2>3.14 — Multi-join (include unassigned on 2020-02-01)</h2>
+      <div class="tabs">
+        <button class="tab" role="tab" aria-controls="p314a" aria-selected="true">Schema / Setup</button>
+        <button class="tab" role="tab" aria-controls="p314b" aria-selected="false">Main Query / Solution</button>
+      </div>
+      <div class="pane active code sql" id="p314a">
+<pre><code class="sql"><span class="kw">-- LessonSchedule ⟕ Student ⟕ Horse; keep NULL students</span></code></pre>
+      </div>
+      <div class="pane code sql" id="p314b">
+<pre><code class="sql"><span class="kw">SELECT</span> l.<span class="id">LessonDateTime</span>,
+       s.<span class="id">FirstName</span>, s.<span class="id">LastName</span>,
+       h.<span class="id">RegisteredName</span>
+<span class="kw">FROM</span> <span class="id">LessonSchedule</span> l
+<span class="kw">LEFT JOIN</span> <span class="id">Student</span> s <span class="kw">ON</span> l.<span class="id">StudentID</span>=s.<span class="id">ID</span>
+<span class="kw">LEFT JOIN</span> <span class="id">Horse</span> h   <span class="kw">ON</span> l.<span class="id">HorseID</span>=h.<span class="id">ID</span>
+<span class="kw">WHERE</span> <span class="fn">DATE</span>(l.<span class="id">LessonDateTime</span>)=<span class="str">'2020-02-01'</span>
+<span class="kw">ORDER BY</span> l.<span class="id">LessonDateTime</span>, h.<span class="id">RegisteredName</span>;
+</code></pre>
+      </div>
+      <pre class="term"><code>
++---------------------+-----------+----------+----------------+
+| LessonDateTime      | FirstName | LastName | RegisteredName |
++---------------------+-----------+----------+----------------+
+| 2020-02-01 08:30:00 | Maria     | Gonzalez | Babe           |
+| 2020-02-01 08:30:00 | NULL      | NULL     | Independence   |
+| 2020-02-01 08:30:00 | Wei       | Zhang    | Thunder        |
+| 2020-02-01 09:00:00 | NULL      | NULL     | Babe           |
+| 2020-02-01 09:00:00 | Wei       | Zhang    | Thunder        |
+| 2020-02-01 09:30:00 | Chales    | Dixon    | Babe           |
+| 2020-02-01 09:30:00 | Amir      | Saliba   | Independence   |
+| 2020-02-01 10:00:00 | Karin     | White    | Babe           |
+| 2020-02-01 10:00:00 | NULL      | NULL     | Independence   |
+| 2020-02-01 10:00:00 | NULL      | NULL     | Thunder        |
++---------------------+-----------+----------+----------------+
+</code></pre>
+    </article>
+
+    <!-- 3.15 SUBQUERY above average height -->
+    <article class="card" id="lab-315">
+      <h2>3.15 — Subquery: Horses above average height</h2>
+      <div class="tabs">
+        <button class="tab" role="tab" aria-controls="p315a" aria-selected="true">Schema / Setup</button>
+        <button class="tab" role="tab" aria-controls="p315b" aria-selected="false">Main Query / Solution</button>
+      </div>
+      <div class="pane active code sql" id="p315a">
+<pre><code class="sql"><span class="kw">-- Uses Horse table</span></code></pre>
+      </div>
+      <div class="pane code sql" id="p315b">
+<pre><code class="sql"><span class="kw">SELECT</span> <span class="id">Breed</span>, <span class="id">RegisteredName</span>, <span class="id">Height</span>
+<span class="kw">FROM</span> <span class="id">Horse</span>
+<span class="kw">WHERE</span> <span class="id">Height</span> <span class="kw">&gt;</span> (<span class="kw">SELECT</span> <span class="fn">AVG</span>(<span class="id">Height</span>) <span class="kw">FROM</span> <span class="id">Horse</span>)
+<span class="kw">ORDER BY</span> <span class="id">Height</span>;
+</code></pre>
+      </div>
+      <pre class="term"><code>
++--------------+----------------+--------+
+| Breed        | RegisteredName | Height |
++--------------+----------------+--------+
+| Holsteiner   | Independence   | 16.0   |
+| Paint        | Thunder        | 16.1   |
+| Holsteiner   | Space Man      | 18.0   |
+| Egyptian Arab| Alexis         | 15.9   |
+| Quarter Horse| Babe           | 15.3   |
+| Saddlebred   | Ellie          | 15.0   |
++--------------+----------------+--------+
+</code></pre>
+    </article>
+
   </section>
+</main>
 
-  <section class="card sect">
-    <h2>3.13 — Inner Join (Scheduled lessons)</h2>
-    <div class="pill">INNER JOIN</div>
-    <div class="cols" style="margin-top:.6rem">
-      <pre class="code"><code class="sql">
-<span class="kw">SELECT</span> <span class="id">LessonDateTime</span>, <span class="id">HorseID</span>, s.<span class="id">FirstName</span>, s.<span class="id">LastName</span>
-<span class="kw">FROM</span> <span class="id">LessonSchedule</span> ls
-<span class="kw">JOIN</span> <span class="id">Student</span> s <span class="kw">ON</span> ls.<span class="id">StudentID</span> <span class="op">=</span> s.<span class="id">ID</span>
-<span class="kw">WHERE</span> ls.<span class="id">StudentID</span> <span class="kw">IS NOT NULL</span>
-<span class="kw">ORDER BY</span> <span class="id">LessonDateTime</span>, <span class="id">HorseID</span>;</code></pre>
-
-      <pre class="term">+---------------------+--------+-----------+-----------+
-| LessonDateTime      | HorseID| FirstName | LastName  |
-+---------------------+--------+-----------+-----------+
-| 2019-02-01 10:00:00 | 2      | Chales    | Dixon     |
-| 2019-02-01 11:30:00 | 4      | Amir      | Saliba    |
-| 2019-02-03 13:30:00 | 4      | Amir      | Saliba    |
-| 2020-02-01 08:30:00 | 1      | Maria     | Gonzalez  |
-| 2020-02-01 08:30:00 | 4      | Wei       | Zhang     |
-| 2020-02-01 09:00:00 | 4      | Wei       | Zhang     |
-| 2020-02-01 09:30:00 | 1      | Chales    | Dixon     |
-| 2020-02-01 09:30:00 | 2      | Amir      | Saliba    |
-| 2020-02-01 10:00:00 | 1      | Karin     | White     |
-+---------------------+--------+-----------+-----------+</pre>
-    </div>
-  </section>
-
-  <section class="card sect">
-    <h2>3.14 — Multi-join (include unassigned times)</h2>
-    <div class="pill">LEFT/RIGHT JOIN</div>
-    <div class="cols" style="margin-top:.6rem">
-      <pre class="code"><code class="sql">
-<span class="kw">SELECT</span> <span class="id">LessonDateTime</span>, s.<span class="id">FirstName</span>, s.<span class="id">LastName</span>, h.<span class="id">RegisteredName</span>
-<span class="kw">FROM</sp
+<footer>© <span id="yr"></span> Dillan Lofton • SQL Portfolio</footer>
+<script>
+  document.getElementById('yr').textContent = new Date().getFullYear();
+  // Simple tabs
+  document.querySelectorAll('.card').forEach(card=>{
+    const tabs = card.querySelectorAll('.tab');
+    const panes = card.querySelectorAll('.pane');
+    tabs.forEach(tab=>{
+      tab.addEventListener('click', ()=>{
+        tabs.forEach(t=>t.setAttribute('aria-selected','false'));
+        panes.forEach(p=>p.classList.remove('active'));
+        tab.setAttribute('aria-selected','true');
+        const pane = card.querySelector('#'+tab.getAttribute('aria-controls'));
+        pane.classList.add('active');
+      });
+    });
+  });
+</script>
+</body>
+</html>
