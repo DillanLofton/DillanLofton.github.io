@@ -1,227 +1,298 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Horse Lesson Scheduling Database | SQL Labs</title>
-
-<!-- look & feel (same dark theme as your other pages) -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Horse Lesson Scheduling Database | Dillan Lofton</title>
 <style>
-:root{
-  --bg:#0f1720; --panel:#111827; --text:#e5e7eb; --muted:#9aa4b2;
-  --brand:#ff9900; --border:#1f2937; --card:#0b1220; --badge:#0b1020;
-}
-*{box-sizing:border-box} html,body{margin:0;background:linear-gradient(180deg,var(--bg),#0a1220);
-color:var(--text);font-family:ui-sans-serif,system-ui,Segoe UI,Roboto,Inter}
-a{color:#ffb84d} header{position:sticky;top:0;z-index:40;background:#0f1720cc;
-backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
-.wrap{max-width:1100px;margin:auto;padding:1rem}
-h1{margin:.4rem 0 .2rem} h2{margin:1.4rem 0 .5rem;color:#ffcc80}
-.grid{display:grid;gap:1rem} @media(min-width:900px){.grid{grid-template-columns:1fr 1fr}}
-.card{background:linear-gradient(180deg,var(--card),#0d1424);border:1px solid var(--border);
-border-radius:14px;padding:1rem}
-.badge{display:inline-block;border:1px solid var(--border);background:var(--badge);
-border-radius:999px;padding:.3rem .55rem;margin:.2rem .25rem .2rem 0;color:#cfd8e3;font-size:.85rem}
-.codebox,pre.console{background:#0a0f1a;border:1px solid #1f2937;border-radius:12px;padding:12px;
-overflow:auto}
-.tabs{display:flex;gap:.5rem;margin:.5rem 0}
-.tab{border:1px solid var(--border);background:#0b1020;color:#dbe3ec;border-radius:8px;
-padding:.25rem .55rem;cursor:pointer;font-size:.9rem}
-.tab.active{outline:2px solid rgba(255,153,0,.35)}
-.small{font-size:.9rem;color:var(--muted)}
-kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.85rem}
-.sql-key{color:#93c5fd} .sql-fn{color:#a3e635} .sql-lit{color:#fca5a5}
-.sql-ident{color:#fcd34d}
-</style>
+  :root{
+    --bg:#0f1720; --panel:#111827; --text:#e5e7eb; --muted:#9ca3af;
+    --brand:#ff9900; --border:#1f2937; --ring: rgba(255,153,0,.35);
+    --card:#0b1220; --card2:#0d1424;
+    --green:#34d399; --cyan:#60a5fa; --purp:#c084fc; --org:#f59e0b; --red:#fb7185;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:linear-gradient(180deg,var(--bg),#0a1220);color:var(--text);
+            font-family:ui-sans-serif,system-ui,Segoe UI,Roboto,Inter,Arial;line-height:1.6}
+  a{color:#ffb84d;text-decoration:none}
+  header{position:sticky;top:0;z-index:50;backdrop-filter:blur(8px);
+         background:rgba(17,24,39,.6);border-bottom:1px solid var(--border)}
+  .wrap{max-width:1100px;margin:auto;padding:1rem}
+  h1{margin:.2rem 0 .4rem;font-size:clamp(1.6rem,3.5vw,2.2rem)}
+  .note{color:var(--muted)}
+  .grid{display:grid;grid-template-columns:1fr;gap:1rem;margin:1rem 0 2rem}
+  .card{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--border);border-radius:14px;
+        padding:1.1rem;box-shadow:0 10px 24px rgba(5,8,15,.35)}
+  .pill{display:inline-block;border:1px solid var(--border);border-radius:999px;padding:.22rem .55rem;margin:.1rem .25rem 0 0;color:#cfd8e3;font-size:.85rem}
+  .sect h2{margin:.2rem 0 .3rem;font-size:1.2rem}
+  .cols{display:grid;gap:1rem}
+  @media(min-width:900px){.cols{grid-template-columns:1.1fr .9fr}}
 
-<!-- Prism (basic) just for monospace look; we color with tiny classes above -->
-<link rel="preconnect" href="https://cdn.jsdelivr.net"/>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
-<script defer src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+  /* terminal-style output */
+  .term{background:#0a0f1a;border:1px solid #0f1a2b;border-radius:10px;padding:.9rem;font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;overflow:auto}
+  /* SQL code theme */
+  pre.code{background:#0a0f1a;border:1px solid #0f1a2b;border-radius:10px;padding:.9rem;overflow:auto}
+  code.sql{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;font-size:.95rem;white-space:pre}
+  /* lightweight syntax colors */
+  .kw{color:var(--org)} .id{color:var(--cyan)} .fn{color:var(--purp)}
+  .str{color:var(--green)} .num{color:#fbbf24} .com{color:#6b7280}
+  .op{color:#93c5fd}
+  footer{border-top:1px solid var(--border);color:#9ca3af;text-align:center;padding:1.2rem}
+</style>
 </head>
 <body>
+<header><div class="wrap"><a href="../index.html">← Back to SQL Projects</a></div></header>
 
-<header><div class="wrap"><a href="../../index.html">← Back to Home</a></div></header>
 <main class="wrap">
-  <h1>Horse Lesson Scheduling Database</h1>
-  <p class="small">
-    A cohesive set of SQL labs: constrained table design, foreign keys, CRUD, joins, and subqueries.
-    All SQL is loaded from the repo under <kbd>/assets/sql/horse-lesson/</kbd>.
-  </p>
+  <h1>🐴 Horse Lesson Scheduling Database</h1>
+  <p class="note">Schema + CRUD labs and joins combining Horse, Student and LessonSchedule. All SQL and outputs are shown with a consistent theme.</p>
 
-  <section class="card">
-    <div class="badge">Tables: Horse • Student • LessonSchedule</div>
-    <div class="badge">Topics: Constraints, FKs, Joins, Subqueries</div>
-    <div class="badge">RDBMS: MySQL-style</div>
-  </section>
+  <!-- SCHEMA / CONSTRAINTS ------------------------------------------------- -->
+  <section class="card sect">
+    <h2>2.19 — Create <code>Horse</code> table (with constraints)</h2>
+    <div class="pill">DDL</div><div class="pill">Constraints</div><div class="pill">MySQL</div>
+    <div class="cols" style="margin-top:.6rem">
+      <pre class="code"><code class="sql">
+<span class="com">-- Drop and create Horse table with constraints</span>
+<span class="kw">DROP</span> <span class="kw">TABLE</span> <span class="kw">IF</span> <span class="kw">EXISTS</span> <span class="id">Horse</span>;
+<span class="kw">CREATE TABLE</span> <span class="id">Horse</span> (
+  <span class="id">ID</span> <span class="kw">SMALLINT</span> <span class="kw">UNSIGNED</span> <span class="kw">NOT NULL</span> <span class="kw">AUTO_INCREMENT</span>,
+  <span class="id">RegisteredName</span> <span class="kw">VARCHAR</span>(<span class="num">15</span>) <span class="kw">NOT NULL</span>,
+  <span class="id">Breed</span> <span class="kw">VARCHAR</span>(<span class="num">20</span>) <span class="kw">CHECK</span> (<span class="id">Breed</span> <span class="kw">IN</span> (<span class="str">'Egyptian Arab'</span>, <span class="str">'Holsteiner'</span>, <span class="str">'Quarter Horse'</span>, <span class="str">'Paint'</span>, <span class="str">'Saddlebred'</span>)),
+  <span class="id">Height</span> <span class="kw">DECIMAL</span>(<span class="num">3</span>,<span class="num">1</span>) <span class="kw">CHECK</span> (<span class="id">Height</span> <span class="kw">BETWEEN</span> <span class="num">10.0</span> <span class="kw">AND</span> <span class="num">20.0</span>),
+  <span class="id">BirthDate</span> <span class="kw">DATE</span> <span class="kw">CHECK</span> (<span class="id">BirthDate</span> <span class="op">&gt;=</span> <span class="str">'2015-01-01'</span>),
+  <span class="kw">PRIMARY KEY</span> (<span class="id">ID</span>)
+);</code></pre>
 
-  <!-- ===== SECTION: CREATE STUDENT (02-20) ===== -->
-  <section class="card">
-    <h2>02.20 — Create Student table (with constraints)</h2>
-    <div class="tabs">
-      <button class="tab active" data-target="s-create-student-init">initialize.sql</button>
-      <button class="tab" data-target="s-create-student-main">main.sql</button>
-      <button class="tab" data-target="s-create-student-out">console output</button>
+      <!-- output: SHOW COLUMNS FROM Horse; -->
+      <div>
+        <p class="note" style="margin:.2rem 0 .4rem">Output (SHOW COLUMNS FROM Horse):</p>
+        <pre class="term">+---------------+-------------------+------+-----+---------+-------------+
+| Field         | Type              | Null | Key | Default | Extra       |
++---------------+-------------------+------+-----+---------+-------------+
+| ID            | smallint unsigned | NO   | PRI | NULL    | auto_increment |
+| RegisteredName| varchar(15)       | NO   |     | NULL    |             |
+| Breed         | varchar(20)       | YES  |     | NULL    |             |
+| Height        | decimal(3,1)      | YES  |     | NULL    |             |
+| BirthDate     | date              | YES  |     | NULL    |             |
++---------------+-------------------+------+-----+---------+-------------+</pre>
+      </div>
     </div>
-    <pre id="s-create-student-init" class="codebox language-sql" data-src="/assets/sql/horse-lesson/02-20-create-student/initialize.sql"></pre>
-    <pre id="s-create-student-main" class="codebox language-sql" data-src="/assets/sql/horse-lesson/02-20-create-student/main.sql" style="display:none"></pre>
-    <pre id="s-create-student-out" class="console" style="display:none">+-----------+-------------------+------+-----+---------+----------------+
-| Field     | Type              | Null | Key | Default | Extra          |
-+-----------+-------------------+------+-----+---------+----------------+
-| ID        | smallint unsigned | NO   | PRI | NULL    | auto_increment |
-| FirstName | varchar(20)       | NO   |     | NULL    |                |
-| LastName  | varchar(30)       | NO   |     | NULL    |                |
-| Street    | varchar(50)       | NO   |     | NULL    |                |
-| City      | varchar(20)       | NO   |     | NULL    |                |
-| State     | char(2)           | NO   |     | TX      |                |
-| Zip       | mediumint unsigned| NO   |     | NULL    |                |
-| Phone     | char(10)          | NO   |     | NULL    |                |
-| Email     | varchar(30)       | YES  | UNI | NULL    |                |
-+-----------+-------------------+------+-----+---------+----------------+</pre>
   </section>
 
-  <!-- ===== SECTION: CREATE LESSONS WITH FKs (02-21) ===== -->
-  <section class="card">
-    <h2>02.21 — Create LessonSchedule (FK constraints)</h2>
-    <p class="small">Composite PK (HorseID, LessonDateTime). ON DELETE CASCADE from Horse,
-    ON DELETE SET NULL from Student.</p>
-    <div class="tabs">
-      <button class="tab active" data-target="s-lessons-init">initialize.sql</button>
-      <button class="tab" data-target="s-lessons-main">main.sql</button>
-      <button class="tab" data-target="s-lessons-out">console output</button>
+  <section class="card sect">
+    <h2>2.20 — Create <code>Student</code> table (with constraints)</h2>
+    <div class="pill">DDL</div><div class="pill">Constraints</div>
+    <div class="cols" style="margin-top:.6rem">
+      <pre class="code"><code class="sql">
+<span class="kw">CREATE TABLE</span> <span class="id">Student</span> (
+  <span class="id">ID</span> <span class="kw">SMALLINT</span> <span class="kw">UNSIGNED</span> <span class="kw">AUTO_INCREMENT</span> <span class="kw">PRIMARY KEY</span>,
+  <span class="id">FirstName</span> <span class="kw">VARCHAR</span>(<span class="num">20</span>) <span class="kw">NOT NULL</span>,
+  <span class="id">LastName</span>  <span class="kw">VARCHAR</span>(<span class="num">30</span>) <span class="kw">NOT NULL</span>,
+  <span class="id">Street</span>     <span class="kw">VARCHAR</span>(<span class="num">50</span>) <span class="kw">NOT NULL</span>,
+  <span class="id">City</span>       <span class="kw">VARCHAR</span>(<span class="num">20</span>) <span class="kw">NOT NULL</span>,
+  <span class="id">State</span>      <span class="kw">CHAR</span>(<span class="num">2</span>) <span class="kw">NOT NULL</span> <span class="kw">DEFAULT</span> <span class="str">'TX'</span>,
+  <span class="id">Zip</span>        <span class="kw">MEDIUMINT</span> <span class="kw">UNSIGNED</span> <span class="kw">NOT NULL</span>,
+  <span class="id">Phone</span>      <span class="kw">CHAR</span>(<span class="num">10</span>) <span class="kw">NOT NULL</span>,
+  <span class="id">Email</span>      <span class="kw">VARCHAR</span>(<span class="num">30</span>) <span class="kw">UNIQUE</span>
+);</code></pre>
+
+      <div>
+        <p class="note" style="margin:.2rem 0 .4rem">Output (SHOW COLUMNS FROM Student):</p>
+        <pre class="term">+-----------+--------------------+------+-----+---------+---------------+
+| Field     | Type               | Null | Key | Default | Extra         |
++-----------+--------------------+------+-----+---------+---------------+
+| ID        | smallint unsigned  | NO   | PRI | NULL    | auto_increment|
+| FirstName | varchar(20)        | NO   |     | NULL    |               |
+| LastName  | varchar(30)        | NO   |     | NULL    |               |
+| Street    | varchar(50)        | NO   |     | NULL    |               |
+| City      | varchar(20)        | NO   |     | NULL    |               |
+| State     | char(2)            | NO   |     | TX      |               |
+| Zip       | mediumint unsigned | NO   |     | NULL    |               |
+| Phone     | char(10)           | NO   |     | NULL    |               |
+| Email     | varchar(30)        | YES  | UNI | NULL    |               |
++-----------+--------------------+------+-----+---------+---------------+</pre>
+      </div>
     </div>
-    <pre id="s-lessons-init" class="codebox language-sql" data-src="/assets/sql/horse-lesson/02-21-create-lessons-fk/initialize.sql"></pre>
-    <pre id="s-lessons-main" class="codebox language-sql" data-src="/assets/sql/horse-lesson/02-21-create-lessons-fk/main.sql" style="display:none"></pre>
-    <pre id="s-lessons-out" class="console" style="display:none">-- Add a SHOW COLUMNS FROM LessonSchedule; output here when you grab it.</pre>
   </section>
 
-  <!-- ===== SECTION: SELF JOIN (03-12) ===== -->
-  <section class="card">
-    <h2>03.12 — Self-Join (Employees & Managers)</h2>
-    <div class="tabs">
-      <button class="tab active" data-target="s-self-init">initialize.sql</button>
-      <button class="tab" data-target="s-self-main">main.sql</button>
-      <button class="tab" data-target="s-self-out">console output</button>
+  <section class="card sect">
+    <h2>2.21 — Create <code>LessonSchedule</code> with foreign keys</h2>
+    <div class="pill">DDL</div><div class="pill">Foreign Keys</div><div class="pill">Composite PK</div>
+    <div class="cols" style="margin-top:.6rem">
+      <pre class="code"><code class="sql">
+<span class="kw">CREATE TABLE</span> <span class="id">LessonSchedule</span> (
+  <span class="id">HorseID</span> <span class="kw">SMALLINT</span> <span class="kw">UNSIGNED</span> <span class="kw">NOT NULL</span>,
+  <span class="id">StudentID</span> <span class="kw">SMALLINT</span> <span class="kw">UNSIGNED</span> <span class="kw">NULL</span>,
+  <span class="id">LessonDateTime</span> <span class="kw">DATETIME</span> <span class="kw">NOT NULL</span>,
+  <span class="kw">PRIMARY KEY</span> (<span class="id">HorseID</span>, <span class="id">LessonDateTime</span>),
+  <span class="kw">FOREIGN KEY</span> (<span class="id">HorseID</span>) <span class="kw">REFERENCES</span> <span class="id">Horse</span>(<span class="id">ID</span>) <span class="kw">ON DELETE CASCADE</span>,
+  <span class="kw">FOREIGN KEY</span> (<span class="id">StudentID</span>) <span class="kw">REFERENCES</span> <span class="id">Student</span>(<span class="id">ID</span>) <span class="kw">ON DELETE SET NULL</span>
+);</code></pre>
+
+      <!-- simulated output style to match 2.19/2.20 -->
+      <div>
+        <p class="note" style="margin:.2rem 0 .4rem">Output (SHOW COLUMNS FROM LessonSchedule):</p>
+        <pre class="term">+---------------+-------------------+------+-----+---------+------+
+| Field         | Type              | Null | Key | Default | Extra|
++---------------+-------------------+------+-----+---------+------+
+| HorseID       | smallint unsigned | NO   | PRI | NULL    |      |
+| StudentID     | smallint unsigned | YES  |     | NULL    |      |
+| LessonDateTime| datetime          | NO   | PRI | NULL    |      |
++---------------+-------------------+------+-----+---------+------+</pre>
+      </div>
     </div>
-    <pre id="s-self-init" class="codebox language-sql" data-src="/assets/sql/horse-lesson/03-12-self-join/initialize.sql"></pre>
-    <pre id="s-self-main" class="codebox language-sql" data-src="/assets/sql/horse-lesson/03-12-self-join/main.sql" style="display:none"></pre>
-    <pre id="s-self-out" class="console" style="display:none">+-----------+---------+
-| Employee  | Manager |
-+-----------+---------+
-| Andy      | Jim     |
-| Angela    | Michael |
-| Dwight    | Michael |
-| Jim       | Michael |
-| Kelly     | Michael |
-| Meredith  | Michael |
-| Michael   | Ryan    |
-| Pam       | Michael |
-| Phyllis   | Andy    |
-| Ryan      | David   |
-| Stanley   | Andy    |
-+-----------+---------+</pre>
   </section>
 
-  <!-- ===== SECTION: INNER JOIN (03-13) ===== -->
-  <section class="card">
-    <h2>03.13 — Inner Join (Lessons with assigned students)</h2>
-    <p class="small">Select lesson datetime, horse ID, and student first/last name. Exclude unassigned (StudentID IS NULL).</p>
-    <div class="tabs">
-      <button class="tab active" data-target="s-inner-init">initialize.sql</button>
-      <button class="tab" data-target="s-inner-main">main.sql</button>
-      <button class="tab" data-target="s-inner-out">console output</button>
+  <!-- CRUD / QUERIES ------------------------------------------------------- -->
+  <section class="card sect">
+    <h2>2.15 — Select horses with logical operators</h2>
+    <div class="pill">SELECT</div>
+    <div class="cols" style="margin-top:.6rem">
+      <pre class="code"><code class="sql">
+<span class="com">-- Initialize</span>
+<span class="kw">SOURCE</span> <span class="id">Initialize.sql</span>;
+<span class="kw">SELECT</span> <span class="id">RegisteredName</span>, <span class="id">Height</span>, <span class="id">BirthDate</span>
+<span class="kw">FROM</span> <span class="id">Horse</span>
+<span class="kw">WHERE</span> <span class="id">Height</span> <span class="kw">BETWEEN</span> <span class="num">15</span> <span class="kw">AND</span> <span class="num">16</span>
+   <span class="kw">OR</span> <span class="id">BirthDate</span> <span class="op">&gt;=</span> <span class="str">'2020-01-01'</span>;</code></pre>
+
+      <pre class="term">+----------------+--------+------------+
+| RegisteredName | Height | BirthDate  |
++----------------+--------+------------+
+| Babe           | 15.3   | 2015-02-10 |
+| Independence   | 16.0   | 2011-03-13 |
+| Ellie          | 15.0   | 2016-12-22 |
+| Alexis         | 15.9   | 2018-02-01 |
+| Lexie          | 16.2   | 2020-02-19 |
++----------------+--------+------------+</pre>
     </div>
-    <pre id="s-inner-init" class="codebox language-sql" data-src="/assets/sql/horse-lesson/03-13-inner-join/initialize.sql"></pre>
-    <pre id="s-inner-main" class="codebox language-sql" data-src="/assets/sql/horse-lesson/03-13-inner-join/main.sql" style="display:none"></pre>
-    <pre id="s-inner-out" class="console" style="display:none">+---------------------+--------+-----------+----------+
-| LessonDateTime      | HorseID| FirstName | LastName |
-+---------------------+--------+-----------+----------+
-| 2019-02-01 10:00:00 | 2      | Chales    | Dixon    |
-| 2019-02-01 11:30:00 | 4      | Amir      | Saliba   |
-| 2019-02-03 13:00:00 | 4      | Amir      | Saliba   |
-| 2020-02-01 08:30:00 | 1      | Maria     | Gonzalez |
-| 2020-02-01 08:30:00 | 4      | Wei       | Zhang    |
-| 2020-02-01 09:00:00 | 1      | Chales    | Dixon    |
-| 2020-02-01 09:30:00 | 4      | Wei       | Zhang    |
-| 2020-02-01 09:30:00 | 2      | Amir      | Saliba   |
-| 2020-02-01 10:00:00 | 1      | Karin     | White    |
-+---------------------+--------+-----------+----------+</pre>
   </section>
 
-  <!-- ===== SECTION: MULTI JOIN incl. NULLs (03-14) ===== -->
-  <section class="card">
-    <h2>03.14 — Multi-Join (Show unassigned slots for 2020-02-01)</h2>
-    <p class="small">Three-way join over LessonSchedule, Student, Horse. Use DATE() filter; keep NULL students.</p>
-    <div class="tabs">
-      <button class="tab active" data-target="s-multi-init">initialize.sql</button>
-      <button class="tab" data-target="s-multi-main">main.sql</button>
-      <button class="tab" data-target="s-multi-out">console output</button>
+  <section class="card sect">
+    <h2>2.16 — Insert rows into Horse</h2>
+    <div class="pill">INSERT</div>
+    <div class="cols" style="margin-top:.6rem">
+      <pre class="code"><code class="sql">
+<span class="kw">INSERT INTO</span> <span class="id">Horse</span>(<span class="id">RegisteredName</span>,<span class="id">Breed</span>,<span class="id">Height</span>,<span class="id">BirthDate</span>) <span class="kw">VALUES</span>
+(<span class="str">'Babe'</span>, <span class="str">'Quarter Horse'</span>, <span class="num">15.3</span>, <span class="str">'2015-02-10'</span>),
+(<span class="str">'Independence'</span>, <span class="str">'Holsteiner'</span>, <span class="num">16.0</span>, <span class="str">'2017-03-13'</span>),
+(<span class="str">'Ellie'</span>, <span class="str">'Saddlebred'</span>, <span class="num">15.0</span>, <span class="str">'2016-12-22'</span>),
+(<span class="kw">NULL</span>, <span class="str">'Egyptian Arab'</span>, <span class="num">14.9</span>, <span class="str">'2019-10-12'</span>);
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="id">Horse</span>;</code></pre>
+
+      <pre class="term">+----+----------------+---------------+--------+------------+
+| ID | RegisteredName | Breed         | Height | BirthDate  |
++----+----------------+---------------+--------+------------+
+| 1  | Babe           | Quarter Horse | 15.3   | 2015-02-10 |
+| 2  | Independence   | Holsteiner    | 16.0   | 2017-03-13 |
+| 3  | Ellie          | Saddlebred    | 15.0   | 2016-12-22 |
+| 4  | NULL           | Egyptian Arab | 14.9   | 2019-10-12 |
++----+----------------+---------------+--------+------------+</pre>
     </div>
-    <pre id="s-multi-init" class="codebox language-sql" data-src="/assets/sql/horse-lesson/03-14-multi-join/initialize.sql"></pre>
-    <pre id="s-multi-main" class="codebox language-sql" data-src="/assets/sql/horse-lesson/03-14-multi-join/main.sql" style="display:none"></pre>
-    <pre id="s-multi-out" class="console" style="display:none">+---------------------+-----------+----------+----------------+
-| LessonDateTime      | FirstName | LastName | RegisteredName |
-+---------------------+-----------+----------+----------------+
-| 2020-02-01 08:30:00 | Maria     | Gonzalez | Babe           |
-| 2020-02-01 08:30:00 | NULL      | NULL     | Independence   |
-| 2020-02-01 08:30:00 | Wei       | Zhang    | Thunder        |
-| 2020-02-01 09:00:00 | NULL      | NULL     | Independence   |
-| 2020-02-01 09:00:00 | Wei       | Zhang    | Thunder        |
-| 2020-02-01 09:30:00 | Chales    | Dixon    | Babe           |
-| 2020-02-01 09:30:00 | Amir      | Saliba   | Independence   |
-| 2020-02-01 10:00:00 | Karin     | White    | Babe           |
-| 2020-02-01 10:00:00 | NULL      | NULL     | Independence   |
-| 2020-02-01 10:00:00 | NULL      | NULL     | Thunder        |
-+---------------------+-----------+----------+----------------+</pre>
   </section>
 
-  <!-- ===== SECTION: SUBQUERY (03-15) ===== -->
-  <section class="card">
-    <h2>03.15 — Subquery (Above-average horse height)</h2>
-    <div class="tabs">
-      <button class="tab active" data-target="s-subq-init">initialize.sql</button>
-      <button class="tab" data-target="s-subq-main">main.sql</button>
-      <button class="tab" data-target="s-subq-out">console output</button>
+  <section class="card sect">
+    <h2>2.17 — Update rows in Horse</h2>
+    <div class="pill">UPDATE</div>
+    <div class="cols" style="margin-top:.6rem">
+      <pre class="code"><code class="sql">
+<span class="kw">UPDATE</span> <span class="id">Horse</span> <span class="kw">SET</span> <span class="id">Height</span><span class="op">=</span><span class="num">15.6</span> <span class="kw">WHERE</span> <span class="id">ID</span><span class="op">=</span><span class="num">2</span>;
+<span class="kw">UPDATE</span> <span class="id">Horse</span> <span class="kw">SET</span> <span class="id">RegisteredName</span><span class="op">=</span><span class="str">'Lady Luck'</span>, <span class="id">BirthDate</span><span class="op">=</span><span class="str">'2015-05-01'</span> <span class="kw">WHERE</span> <span class="id">ID</span><span class="op">=</span><span class="num">4</span>;
+<span class="kw">UPDATE</span> <span class="id">Horse</span> <span class="kw">SET</span> <span class="id">Breed</span><span class="op">=</span><span class="kw">NULL</span> <span class="kw">WHERE</span> <span class="id">BirthDate</span> <span class="op">&gt;=</span> <span class="str">'2016-12-22'</span>;
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="id">Horse</span>;</code></pre>
+
+      <pre class="term">+----+---------------+---------------+--------+------------+
+| ID | RegisteredName| Breed         | Height | BirthDate  |
++----+---------------+---------------+--------+------------+
+| 1  | Babe          | Quarter Horse | 15.3   | 2015-02-10 |
+| 2  | Independence  | Holsteiner    | 15.6   | 2015-03-13 |
+| 3  | Ellie         | NULL          | 15.0   | 2016-12-22 |
+| 4  | Lady Luck     | Paint         | 16.1   | 2015-05-01 |
+| 5  | Alexis        | NULL          | 15.9   | 2018-02-01 |
++----+---------------+---------------+--------+------------+</pre>
     </div>
-    <pre id="s-subq-init" class="codebox language-sql" data-src="/assets/sql/horse-lesson/03-15-subquery/initialize.sql"></pre>
-    <pre id="s-subq-main" class="codebox language-sql" data-src="/assets/sql/horse-lesson/03-15-subquery/main.sql" style="display:none"></pre>
-    <pre id="s-subq-out" class="console" style="display:none">+-------------+----------------+--------+
-| breed       | Registeredname | height |
-+-------------+----------------+--------+
-| Holsteiner  | Space Man      | 18.0   |
-| Paint       | Thunder        | 16.1   |
-| Holsteiner  | Independence   | 16.0   |
-| Egyptian Arab| Alexis        | 15.9   |
-| Quarter Horse| Babe          | 15.3   |
-| Saddlebred  | Ellie          | 15.0   |
-+-------------+----------------+--------+</pre>
   </section>
 
-  <!-- (You can add your earlier Horse labs 02.15–02.19 here, or leave them on the separate page.) -->
+  <section class="card sect">
+    <h2>2.18 — Delete rows from Horse</h2>
+    <div class="pill">DELETE</div>
+    <div class="cols" style="margin-top:.6rem">
+      <pre class="code"><code class="sql">
+<span class="kw">DELETE FROM</span> <span class="id">Horse</span> <span class="kw">WHERE</span> <span class="id">ID</span><span class="op">=</span><span class="num">5</span>;
+<span class="kw">DELETE FROM</span> <span class="id">Horse</span> <span class="kw">WHERE</span> <span class="id">Breed</span><span class="op">=</span><span class="str">'Holsteiner'</span> <span class="kw">OR</span> <span class="id">Breed</span><span class="op">=</span><span class="str">'Paint'</span>;
+<span class="kw">DELETE FROM</span> <span class="id">Horse</span> <span class="kw">WHERE</span> <span class="id">BirthDate</span> <span class="op">&lt;</span> <span class="str">'2013-03-13'</span>;
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="id">Horse</span>;</code></pre>
 
-</main>
+      <pre class="term">+----+----------------+---------------+--------+------------+
+| ID | RegisteredName | Breed         | Height | BirthDate  |
++----+----------------+---------------+--------+------------+
+| 1  | Babe           | Quarter Horse | 15.3   | 2015-02-10 |
+| 3  | Ellie          | Saddlebred    | 15.0   | 2016-12-22 |
++----+----------------+---------------+--------+------------+</pre>
+    </div>
+  </section>
 
-<script>
-// tiny loader to pull sql files from your repo into the code blocks
-document.querySelectorAll('[data-src]').forEach(async el=>{
-  try{
-    const res = await fetch(el.getAttribute('data-src'));
-    el.textContent = await res.text();
-    Prism.highlightElement(el);
-  }catch(e){
-    el.textContent = '-- could not load file: ' + el.getAttribute('data-src');
-  }
-});
-// tabs
-document.querySelectorAll('.tab').forEach(btn=>{
-  btn.addEventListener('click', () => {
-    const card = btn.closest('.card');
-    card.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    card.querySelectorAll('.codebox, .console').forEach(p=>p.style.display='none');
-    card.querySelector('#'+btn.dataset.target).style.display='block';
-  })
-});
-</script>
-</body>
-</html>
+  <!-- COMPLEX QUERIES ------------------------------------------------------ -->
+  <section class="card sect">
+    <h2>3.12 — Self Join (Employee ↔ Manager)</h2>
+    <div class="pill">SELF JOIN</div>
+    <div class="cols" style="margin-top:.6rem">
+      <pre class="code"><code class="sql">
+<span class="kw">SELECT</span> e.<span class="id">FirstName</span> <span class="kw">AS</span> <span class="id">Employee</span>, m.<span class="id">FirstName</span> <span class="kw">AS</span> <span class="id">Manager</span>
+<span class="kw">FROM</span> <span class="id">Employee</span> e
+<span class="kw">INNER JOIN</span> <span class="id">Employee</span> m <span class="kw">ON</span> e.<span class="id">ManagerID</span> <span class="op">=</span> m.<span class="id">ID</span>
+<span class="kw">ORDER BY</span> e.<span class="id">FirstName</span>;</code></pre>
+
+      <pre class="term">+----------+---------+
+| Employee | Manager |
++----------+---------+
+| Andy     | Jim     |
+| Angela   | Michael |
+| Dwight   | Michael |
+| Jim      | Michael |
+| Kelly    | Michael |
+| Meredith | Michael |
+| Michael  | Ryan    |
+| Pam      | Michael |
+| Phyllis  | Andy    |
+| Ryan     | David   |
+| Stanley  | Andy    |
++----------+---------+</pre>
+    </div>
+  </section>
+
+  <section class="card sect">
+    <h2>3.13 — Inner Join (Scheduled lessons)</h2>
+    <div class="pill">INNER JOIN</div>
+    <div class="cols" style="margin-top:.6rem">
+      <pre class="code"><code class="sql">
+<span class="kw">SELECT</span> <span class="id">LessonDateTime</span>, <span class="id">HorseID</span>, s.<span class="id">FirstName</span>, s.<span class="id">LastName</span>
+<span class="kw">FROM</span> <span class="id">LessonSchedule</span> ls
+<span class="kw">JOIN</span> <span class="id">Student</span> s <span class="kw">ON</span> ls.<span class="id">StudentID</span> <span class="op">=</span> s.<span class="id">ID</span>
+<span class="kw">WHERE</span> ls.<span class="id">StudentID</span> <span class="kw">IS NOT NULL</span>
+<span class="kw">ORDER BY</span> <span class="id">LessonDateTime</span>, <span class="id">HorseID</span>;</code></pre>
+
+      <pre class="term">+---------------------+--------+-----------+-----------+
+| LessonDateTime      | HorseID| FirstName | LastName  |
++---------------------+--------+-----------+-----------+
+| 2019-02-01 10:00:00 | 2      | Chales    | Dixon     |
+| 2019-02-01 11:30:00 | 4      | Amir      | Saliba    |
+| 2019-02-03 13:30:00 | 4      | Amir      | Saliba    |
+| 2020-02-01 08:30:00 | 1      | Maria     | Gonzalez  |
+| 2020-02-01 08:30:00 | 4      | Wei       | Zhang     |
+| 2020-02-01 09:00:00 | 4      | Wei       | Zhang     |
+| 2020-02-01 09:30:00 | 1      | Chales    | Dixon     |
+| 2020-02-01 09:30:00 | 2      | Amir      | Saliba    |
+| 2020-02-01 10:00:00 | 1      | Karin     | White     |
++---------------------+--------+-----------+-----------+</pre>
+    </div>
+  </section>
+
+  <section class="card sect">
+    <h2>3.14 — Multi-join (include unassigned times)</h2>
+    <div class="pill">LEFT/RIGHT JOIN</div>
+    <div class="cols" style="margin-top:.6rem">
+      <pre class="code"><code class="sql">
+<span class="kw">SELECT</span> <span class="id">LessonDateTime</span>, s.<span class="id">FirstName</span>, s.<span class="id">LastName</span>, h.<span class="id">RegisteredName</span>
+<span class="kw">FROM</sp
